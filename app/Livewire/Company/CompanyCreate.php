@@ -5,6 +5,7 @@ namespace App\Livewire\Company;
 use App\Models\Company;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\CompanyFetchCroSubmissions;
 
 class CompanyCreate extends Component
 {
@@ -129,7 +130,7 @@ class CompanyCreate extends Component
     {
         $this->validate();
 
-        Company::create([
+        $company = Company::create([
             'business_id' => Auth::user()->current_business_id,
             'company_number' => $this->company_number,
             'name' => $this->name,
@@ -149,6 +150,7 @@ class CompanyCreate extends Component
             'company_type_code' => $this->company_type_code,
             'company_status_code' => $this->company_status_code,
         ]);
+        CompanyFetchCroSubmissions::dispatch($company);
 
         $this->reset([
             'company_number',
