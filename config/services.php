@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'cro' => [
+        'email' => env('CRO_EMAIL'),
+        'key' => env('CRO_API_KEY'),
+    ],
+
 ];

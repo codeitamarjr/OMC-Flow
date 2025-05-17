@@ -15,19 +15,12 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+                @if(auth()->user()?->hasCompaniesInCurrentBusiness())
+                    <flux:navlist.item icon="briefcase" :href="route('company.index')" :current="request()->routeIs('company.index')" wire:navigate>{{ __('Companies') }}</flux:navlist.item>
+                @endif
             </flux:navlist>
 
-            <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
+            <flux:spacer />           
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">
@@ -62,6 +55,27 @@
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                     </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item :href="route('business.index')" icon="users" wire:navigate>{{ __('Business') }}</flux:menu.item>
+                        <flux:menu.item :href="route('company.manage')" icon="briefcase" wire:navigate>{{ __('Companies') }}</flux:menu.item>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item :href="route('tag.index')" icon="tag" wire:navigate>{{ __('Tags') }}</flux:menu.item>
+                    </flux:menu.radio.group>
+
+                    @if(auth()->user()?->hasCompaniesInCurrentBusiness() && auth()->user()?->roleInCurrentBusiness() === 'admin')
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item :href="route('team.manager')" icon="users" wire:navigate>{{ __('Team') }}</flux:menu.item>
+                    </flux:menu.radio.group>
+                    @endif
 
                     <flux:menu.separator />
 
