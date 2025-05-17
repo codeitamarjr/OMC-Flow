@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-gray-800 relative overflow-hidden">
+<div class="h-full flex flex-col bg-white dark:bg-gray-800 relative overflow-hidden">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
         <div class="w-full md:w-1/2">
             <form class="flex items-center">
@@ -110,7 +110,8 @@
         </div>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full h-full text-sm text-left text-gray-500 dark:text-gray-400" wire:loading.class="opacity-50">
+        <table class="w-full h-full text-sm text-left text-gray-500 dark:text-gray-400"
+            wire:loading.class="opacity-50">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-4 py-3">Company Registration</th>
@@ -182,7 +183,8 @@
                                         aria-labelledby="apple-imac-27-dropdown-button">
                                         <li>
                                             <div wire:click="updateSubmission({{ $company->id }})"
-                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Update Submissions</div>
+                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                Update Submissions</div>
                                         </li>
                                     </ul>
                                     <div class="py-1">
@@ -205,7 +207,7 @@
             </tbody>
         </table>
     </div>
-    <div class="px-4 py-3 sm:px-6 {{$companies->links() ? 'mt-10' : ''}}">
+    <div class="px-4 py-3 sm:px-6 {{ $companies->links() ? 'mt-10' : '' }}">
         {{ $companies->links() ?? '' }}
     </div>
 </div>
