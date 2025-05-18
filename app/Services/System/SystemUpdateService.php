@@ -25,13 +25,14 @@ class SystemUpdateService
             'status' => 'running',
         ]);
 
+        $php = trim(shell_exec('which php')) ?: 'php';
         $commands = [
             'git fetch origin',
             'git reset --hard origin/main',
             'git clean -fd',
-            'php artisan migrate',
-            'php artisan optimize:clear',
-            'php artisan queue:restart',
+            "$php artisan migrate",
+            "$php artisan optimize:clear",
+            "$php artisan queue:restart",
             'npm install',
             'npm run build',
         ];
