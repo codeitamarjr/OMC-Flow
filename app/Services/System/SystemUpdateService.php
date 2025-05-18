@@ -26,11 +26,18 @@ class SystemUpdateService
 
         $php = env('PHP_BINARY_PATH', '/usr/bin/php');
         $npm = env('NPM_BINARY_PATH', '/usr/bin/npm');
-        $node = env('NPM_BINARY_PATH', '/usr/bin/node');
+        $node = env('NODE_BINARY_PATH', '/usr/bin/node');
         $customEnv = [
-            'PATH' => dirname($php) . ':' . dirname($npm) . ':' . dirname($node) . ':' . getenv('PATH'),
+            'PATH' => implode(':', [
+                dirname($php),
+                dirname($npm),
+                dirname($node),
+                '/bin',                // for local sh
+                '/usr/bin',            // for server sh
+                '/usr/local/bin',      // common extra tools
+                getenv('PATH'),        // keep any existing path
+            ]),
         ];
-
         $commands = [
             'git fetch origin',
             'git reset --hard origin/main',
