@@ -13,7 +13,7 @@
                     <p><strong>Description:</strong> {{ $updateAvailable['description'] }}</p>
                 </div>
 
-                <button wire:click="runUpdate" wire:loading.attr="disabled"
+                <button wire:click="runUpdate" wire:loading.remove
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                     Run Update
                 </button>
