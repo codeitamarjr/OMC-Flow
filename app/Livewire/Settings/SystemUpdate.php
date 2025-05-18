@@ -30,6 +30,8 @@ class SystemUpdate extends Component
         $this->log = $update->update_log;
         $this->status = $update->status;
         $this->isRunning = false;
+
+        $this->mount($service);
     }
 
     public function render()
