@@ -3,8 +3,7 @@
 namespace App\Services\System;
 
 use App\Models\SystemUpdate;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
+use Symfony\Component\Process\Process;
 
 class SystemUpdateService
 {
