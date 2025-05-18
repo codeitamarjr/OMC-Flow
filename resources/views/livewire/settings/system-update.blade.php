@@ -46,7 +46,15 @@
                         <p><strong>Version:</strong> {{ $update->version }}</p>
                         <p><strong>Title:</strong> {{ $update->commit_title }}</p>
                         <p><strong>Description:</strong> {{ $update->description }}</p>
-                        <p><strong>Status:</strong> {{ $update->status }}</p>
+                        <p><strong>Status:</strong>
+                            <span
+                                class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                <svg class="size-1.5 fill-blue-500" viewBox="0 0 6 6" aria-hidden="true">
+                                    <circle cx="3" cy="3" r="3" />
+                                </svg>
+                                {{ $update->status }}
+                            </span>
+                        </p>
                     </div>
                 @endforeach
             </div>
