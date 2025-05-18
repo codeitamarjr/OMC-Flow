@@ -4,7 +4,7 @@ namespace App\Services\System;
 
 use App\Models\SystemUpdate;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 class SystemUpdateService
 {
@@ -25,8 +25,8 @@ class SystemUpdateService
             'status' => 'running',
         ]);
 
-        $php = trim(shell_exec('which php')) ?: 'php';
-        Log::info('php: ' . $php);
+        $php = env('PHP_BINARY_PATH', '/usr/bin/php');
+
         $commands = [
             'git fetch origin',
             'git reset --hard origin/main',
