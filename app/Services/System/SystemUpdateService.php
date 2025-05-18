@@ -26,6 +26,10 @@ class SystemUpdateService
 
         $php = env('PHP_BINARY_PATH', '/usr/bin/php');
         $npm = env('NPM_BINARY_PATH', '/usr/bin/npm');
+        $node = env('NPM_BINARY_PATH', '/usr/bin/node');
+        $customEnv = [
+            'PATH' => dirname($php) . ':' . dirname($npm) . ':' . dirname($node) . ':' . getenv('PATH'),
+        ];
 
         $commands = [
             'git fetch origin',
@@ -41,7 +45,7 @@ class SystemUpdateService
         foreach ($commands as $command) {
             $output .= "Running: $command\n";
             try {
-                $process = Process::fromShellCommandline($command, base_path(), null, null, 300);
+                $process = Process::fromShellCommandline($command, base_path(), $customEnv, null, 300);
                 $process->run();
 
                 $output .= $process->getOutput() . "\n";
