@@ -26,6 +26,7 @@ class SystemUpdateService
         ]);
 
         $php = trim(shell_exec('which php')) ?: 'php';
+        Log::info('php: ' . $php);
         $commands = [
             'git fetch origin',
             'git reset --hard origin/main',
