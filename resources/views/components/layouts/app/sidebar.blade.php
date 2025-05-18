@@ -55,7 +55,7 @@
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                         @if ($hasUpdate)
-                            <flux:menu.item :href="route('system-update')" icon="refresh-cw" class="text-red-600 font-semibold">
+                            <flux:menu.item :href="route('settings.update')" icon="arrow-path" class="text-red-600 font-semibold">
                                 🔄 Update Available
                             </flux:menu.item>
                         @endif
