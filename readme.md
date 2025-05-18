@@ -137,7 +137,7 @@ When an admin invites a new user:
 - [ ] Auto-download and store official CRO PDFs
 - [ ] Multi-tenant audit trail
 - [ ] Permissions per business (Granular access control)
-- [x] Update the application from the app
+- [ ] Update the application from the app
 
 ---
 
