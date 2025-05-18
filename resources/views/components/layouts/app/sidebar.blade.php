@@ -70,11 +70,11 @@
                     </flux:menu.radio.group>
 
                     @if(auth()->user()?->hasCompaniesInCurrentBusiness() && auth()->user()?->roleInCurrentBusiness() === 'admin')
-                    <flux:menu.separator />
+                        <flux:menu.separator />
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('team.manager')" icon="users" wire:navigate>{{ __('Team') }}</flux:menu.item>
-                    </flux:menu.radio.group>
+                        <flux:menu.radio.group>
+                            <flux:menu.item :href="route('team.manager')" icon="users" wire:navigate>{{ __('Team') }}</flux:menu.item>
+                        </flux:menu.radio.group>
                     @endif
 
                     <flux:menu.separator />

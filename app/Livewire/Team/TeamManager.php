@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Email;
 
 class TeamManager extends Component
 {
@@ -61,8 +62,9 @@ class TeamManager extends Component
                 session()->flash('error', 'User is already part of the business.');
                 return;
             }
+
+            $this->sendInvitationOnlyEmail($user);
         } else {
-            // Create new user
             $user = \App\Models\User::create([
                 'name' => $this->name,
                 'email' => $this->email,
@@ -70,11 +72,9 @@ class TeamManager extends Component
                 'current_business_id' => $business->id,
             ]);
 
-            // Send invite email
             $this->sendInvitationEmail($user);
         }
 
-        // Attach to business
         $business->users()->attach($user->id, ['role' => 'member']);
 
         $this->reset(['email', 'name']);
@@ -92,9 +92,23 @@ class TeamManager extends Component
     {
         $token = Password::createToken($user);
 
-        $url = url(route('password.reset', ['token' => $token, 'email' => $user->email]));
+        $url = url(route('invite-password.set', ['token' => $token, 'email' => $user->email]));
 
-        Mail::to($user->email)->send(new \App\Mail\InviteUserToBusiness($user, $url));
+        Mail::to($user->email)->send(new \App\Mail\InviteUserToBusinessSetPassword($user, $url));
+    }
+
+    /**
+     * Send an invitation email to an existing user without a password reset link.
+     *
+     * This method is used when the user already exists in the system but is not yet part of the current business.
+     * It sends an invitation notification email to the specified user's email address.
+     *
+     * @param \App\Models\User $user The user to whom the invitation email is sent.
+     * @return void
+     */
+    protected function sendInvitationOnlyEmail(\App\Models\User $user): void
+    {
+        Mail::to($user->email)->send(new \App\Mail\InviteUserToBusinessNotification($user));
     }
 
     /**
