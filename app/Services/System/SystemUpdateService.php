@@ -25,7 +25,7 @@ class SystemUpdateService
         ]);
 
         $php = env('PHP_BINARY_PATH', '/usr/bin/php');
-        $npm = env('NPM_BINARY_PATH', '/opt/homebrew/bin/npm');
+        $npm = env('NPM_BINARY_PATH', '/usr/bin/npm');
 
         $commands = [
             'git fetch origin',
