@@ -25,6 +25,7 @@ class SystemUpdateService
         ]);
 
         $php = env('PHP_BINARY_PATH', '/usr/bin/php');
+        $npm = env('NPM_BINARY_PATH', '/opt/homebrew/bin/npm');
 
         $commands = [
             'git fetch origin',
@@ -33,8 +34,8 @@ class SystemUpdateService
             "$php artisan migrate",
             "$php artisan optimize:clear",
             "$php artisan queue:restart",
-            'npm install',
-            'npm run build',
+            "$npm install",
+            "$npm run build",
         ];
 
         foreach ($commands as $command) {
