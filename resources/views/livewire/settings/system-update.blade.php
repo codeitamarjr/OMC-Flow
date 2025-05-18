@@ -36,5 +36,22 @@
             @endif
         </div>
 
+        @if ($updates)
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-4">Updates History</h2>
+                </h2>
+
+                @foreach ($updates as $update)
+                    <div class="mb-4 p-4 bg-gray-100 border-l-4 border-gray-500">
+                        <p><strong>Version:</strong> {{ $update->version }}</p>
+                        <p><strong>Title:</strong> {{ $update->commit_title }}</p>
+                        <p><strong>Description:</strong> {{ $update->description }}</p>
+                        <p><strong>Status:</strong> {{ $update->status }}</p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+
     </x-update.layout>
 </section>
