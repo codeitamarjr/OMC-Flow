@@ -20,6 +20,12 @@ class SystemUpdate extends Component
         $this->updates = ModelsSystemUpdate::orderBy('created_at', 'desc')->limit(5)->get();
     }
 
+    /**
+     * Run the system update and update the Livewire component with the result.
+     *
+     * @param SystemUpdateService $service
+     * @return void
+     */
     public function runUpdate(SystemUpdateService $service)
     {
         $this->isRunning = true;
