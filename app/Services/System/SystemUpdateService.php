@@ -72,8 +72,8 @@ class SystemUpdateService
         if ($currentVersion !== $latestVersion) {
             return [
                 'version' => $latestVersion,
-                'title' => trim(shell_exec("git log $latestVersion -1 --pretty=%s")),
-                'description' => trim(shell_exec("git log $latestVersion -1 --pretty=%b")),
+                'title' => trim(shell_exec("git log {$latestVersion} -1 --pretty=%s")),
+                'description' => trim(shell_exec("git log {$latestVersion} -1 --pretty=%b")),
             ];
         }
 
