@@ -24,7 +24,8 @@
             @endif
 
             @if ($log)
-                <div class="mt-6 bg-black text-green-400 p-4 text-sm overflow-y-auto h-64 whitespace-pre-wrap">
+                <div
+                    class="mt-6 bg-black text-green-400 p-4 text-sm whitespace-pre-wrap break-words transition-all duration-300 ease-in-out">
                     {{ $log }}
                 </div>
 
