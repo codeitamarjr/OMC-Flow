@@ -63,7 +63,7 @@ class TeamManager extends Component
                 return;
             }
 
-            $this->sendInvitationOnlyEmail($user);
+            $this->sendInviteExistingUser($user);
         } else {
             $user = \App\Models\User::create([
                 'name' => $this->name,
@@ -72,7 +72,7 @@ class TeamManager extends Component
                 'current_business_id' => $business->id,
             ]);
 
-            $this->sendIntiveEmail($user);
+            $this->sendInviteNewUser($user);
         }
 
         $business->users()->attach($user->id, ['role' => 'member']);
@@ -90,7 +90,7 @@ class TeamManager extends Component
      */
     public function reSendInvite(\App\Models\User $user): void
     {
-        $this->sendInvitationOnlyEmail($user);
+        $this->sendInviteExistingUser($user);
         session()->flash('success', 'Invitation resent successfully.');
     }
 
@@ -100,7 +100,7 @@ class TeamManager extends Component
      * @param \App\Models\User $user The user to whom the invitation email is sent.
      * @return void
      */
-    protected function sendIntiveEmail(\App\Models\User $user): void
+    protected function sendInviteNewUser(\App\Models\User $user): void
     {
         $token = Password::createToken($user);
 
@@ -118,7 +118,7 @@ class TeamManager extends Component
      * @param \App\Models\User $user The user to whom the invitation email is sent.
      * @return void
      */
-    protected function sendInvitationOnlyEmail(\App\Models\User $user): void
+    protected function sendInviteExistingUser(\App\Models\User $user): void
     {
         Mail::to($user->email)->send(new \App\Mail\InviteUserToBusinessNotification($user));
     }
