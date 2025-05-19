@@ -24,12 +24,6 @@ class CompanyTable extends Component
 
     public function mount()
     {
-        $currentBusinessId = Auth::user()->current_business_id;
-
-        if (session('last_business_id') !== $currentBusinessId) {
-            session()->forget('selected_tag_filters');
-            session()->put('last_business_id', $currentBusinessId);
-        }
         $this->allTags = \App\Models\Tag::where('business_id', Auth::user()->current_business_id)
             ->get(['id', 'name']);
 
@@ -60,20 +54,6 @@ class CompanyTable extends Component
                 $query->whereHas('tags', function ($q) {
                     $q->whereIn('tags.id', $this->selectedTagFilters);
                 });
-            })
-            ->when($this->sortBy === 'ar_status', function ($query) use ($today, $soon) {
-                $query->select('companies.*')
-                    ->selectRaw(<<<SQL
-                        CASE
-                            WHEN next_annual_return IS NULL        THEN 4
-                            WHEN next_annual_return < ?           THEN 1
-                            WHEN next_annual_return <= ?          THEN 2
-                            ELSE 3
-                        END AS ar_status_order
-                    SQL, [$today, $soon])
-                    ->orderBy('ar_status_order', $this->sortDirection);
-            }, function ($query) {
-                $query->orderBy($this->sortBy, $this->sortDirection);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
