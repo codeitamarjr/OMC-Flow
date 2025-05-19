@@ -152,12 +152,12 @@
                         @foreach ($companies as $company)
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                                 <th scope="row"
-                                    class="px-6 py-1.5 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-6 py-1.5 font-medium text-gray-900 whitespace-nowrap dark:text-gray-300">
                                     {{ $company->company_number }}
                                 </th>
                                 <td class="px-6 py-0.5">
                                     <div class="ml-3">
-                                        <p class="text-base font-semibold text-gray-900 dark:text-white">
+                                        <p class="text-base font-semibold text-gray-900 dark:text-gray-300">
                                             {{ $company->name }}
                                         </p>
                                         <span class="text-sm font-medium text-gray-500 dark:text-gray-400">

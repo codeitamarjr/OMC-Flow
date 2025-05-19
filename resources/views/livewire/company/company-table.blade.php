@@ -130,9 +130,9 @@
                     <tr class="border-b dark:border-gray-700">
                         <th scope="row"
                             class="px-4 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            <div class="text-sm/6 text-gray-500">{{ $company->company_number }}</div>
-                            <div class="text-sm/6 text-gray-900">{{ $company->name }}</div>
-                            <div class="text-sm/6 text-gray-500">{{ $company->custom }}
+                            <div class="text-sm/6 text-gray-500 dark:text-gray-400">{{ $company->company_number }}</div>
+                            <div class="text-sm/6 text-gray-900 dark:text-gray-300">{{ $company->name }}</div>
+                            <div class="text-sm/6 text-gray-500 dark:text-gray-400">{{ $company->custom }}
                                 @if ($company->tags->isNotEmpty())
                                     @foreach ($company->tags as $tag)
                                         <span
@@ -148,7 +148,7 @@
                             </div>
                         </th>
                         <td class="px-4 py-1">
-                            <div class="mt-1 text-xs/5 text-gray-500">{{ $company->next_annual_return }}</div>
+                            <div class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">{{ $company->next_annual_return }}</div>
                         </td>
                         <td class="px-4 py-1" x-data="{ tooltip: false }">
                             @php
