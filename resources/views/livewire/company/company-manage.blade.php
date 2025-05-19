@@ -55,6 +55,9 @@
                                     <p class="text-ellipsis whitespace-nowrap max-w-[350px] overflow-hidden">
                                         {{ $company->name }}
                                     </p>
+                                    <span class="text-gray-500 text-sm">
+                                        {{ $company->custom }}
+                                    </span>
                                 </div>
                                 <div class="mt-1.5 mb-1 text-gray-500 text-sm">
                                     {{ $company->company_type }}
@@ -210,8 +213,8 @@
                     @if ($confirmingDelete)
                         <x-ui.modal wire:model="showDeleteModal">
                             <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
-                                <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor">
+                                <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
