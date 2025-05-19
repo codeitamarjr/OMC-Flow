@@ -6,17 +6,15 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Company;
 use App\Models\Business;
+use App\Models\UserNotificationSetting;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
+   
     public function run(): void
     {
         User::factory(100)->create()->each(function ($user) {
-            // Each user creates 2 businesses
             Business::factory(2)->create()->each(function ($business) use ($user) {
                 $business->users()->attach($user->id, ['role' => 'admin']);
 
@@ -32,7 +30,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ])->each(function ($user) {
-            // Each user creates 1 business
             Business::factory(1)->create()->each(function ($business) use ($user) {
                 $business->users()->attach($user->id, ['role' => 'admin']);
 

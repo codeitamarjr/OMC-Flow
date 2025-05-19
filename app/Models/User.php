@@ -3,10 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Str;
+use App\Models\UserNotificationSetting;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -126,5 +127,30 @@ class User extends Authenticatable
         return $this->businesses()
             ->where('business_id', $businessId)
             ->first()?->pivot?->role;
+    }
+
+    /**
+     * Get the notification settings associated with the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notificationSettings()
+    {
+        return $this->hasMany(UserNotificationSetting::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function (User $user) {
+            $defaults = collect(UserNotificationSetting::KEYS)
+                ->keys()
+                ->map(fn(string $key) => [
+                    'notification_key' => $key,
+                    'is_enabled'       => true,
+                ])
+                ->all();
+
+            $user->notificationSettings()->createMany($defaults);
+        });
     }
 }
