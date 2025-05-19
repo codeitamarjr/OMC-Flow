@@ -108,6 +108,20 @@ class CompanyTable extends Component
         $this->resetPage();
     }
 
+    /**
+     * Updates the session with the selected tag filters when the selected tag filters change.
+     *
+     * This is necessary because we need to store the selected tag filters in the session so
+     * that the filter is preserved when the user navigates away from the page and comes back.
+     *
+     * @return void
+     */
+    public function updatingSelectedTagFilters()
+    {
+        session()->put('selected_tag_filters', $this->selectedTagFilters);
+        $this->resetPage();
+    }
+
 
     /**
      * Dispatches a job to update the submission documents for the specified company.
