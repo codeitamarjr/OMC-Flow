@@ -11,12 +11,14 @@ class CompanyCreate extends Component
 {
     public string $company_number = '';
     public string $name = '';
+    public ?string $custom = null;
     public ?string $company_type = null;
     public ?string $status = null;
     public ?string $effective_date = null;
     public ?string $registration_date = null;
     public ?string $last_annual_return = null;
     public ?string $next_annual_return = null;
+    public ?string $next_financial_statement_due = null;
     public ?string $last_accounts = null;
     public ?string $postcode = null;
     public ?string $address_line_1 = null;
@@ -30,12 +32,14 @@ class CompanyCreate extends Component
     protected $rules = [
         'company_number' => 'required|string|unique:companies,company_number',
         'name' => 'required|string|max:255',
+        'custom' => 'nullable|string',
         'company_type' => 'nullable|string',
         'status' => 'nullable|string',
         'effective_date' => 'nullable|date',
         'registration_date' => 'nullable|date',
         'last_annual_return' => 'nullable|date',
         'next_annual_return' => 'nullable|date',
+        'next_financial_statement_due' => 'nullable|date',
         'last_accounts' => 'nullable|date',
         'postcode' => 'nullable|string|max:1000',
         'address_line_1' => 'nullable|string|max:1000',
@@ -109,12 +113,14 @@ class CompanyCreate extends Component
     protected function resetCompanyFields()
     {
         $this->name = '';
+        $this->custom = null;
         $this->company_type = null;
         $this->status = null;
         $this->effective_date = null;
         $this->registration_date = null;
         $this->last_annual_return = null;
         $this->next_annual_return = null;
+        $this->next_financial_statement_due = null;
         $this->last_accounts = null;
         $this->postcode = null;
         $this->address_line_1 = null;
@@ -134,12 +140,14 @@ class CompanyCreate extends Component
             'business_id' => Auth::user()->current_business_id,
             'company_number' => $this->company_number,
             'name' => $this->name,
+            'custom' => $this->custom,
             'company_type' => $this->company_type,
             'status' => $this->status,
             'effective_date' => $this->effective_date,
             'registration_date' => $this->registration_date,
             'last_annual_return' => $this->last_annual_return,
             'next_annual_return' => $this->next_annual_return,
+            'next_financial_statement_due' => $this->next_financial_statement_due,
             'last_accounts' => $this->last_accounts,
             'postcode' => $this->postcode,
             'address_line_1' => $this->address_line_1,
@@ -155,12 +163,14 @@ class CompanyCreate extends Component
         $this->reset([
             'company_number',
             'name',
+            'custom',
             'company_type',
             'status',
             'effective_date',
             'registration_date',
             'last_annual_return',
             'next_annual_return',
+            'next_financial_statement_due',
             'last_accounts',
             'postcode',
             'address_line_1',

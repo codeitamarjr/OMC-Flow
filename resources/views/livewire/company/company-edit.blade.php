@@ -13,12 +13,14 @@
         <form wire:submit.prevent="save" class="my-6 w-full space-y-6">
             <flux:input wire:model="company_number" :label="__('Company Number')" required />
             <flux:input wire:model="name" :label="__('Name')" required />
+            <flux:input wire:model="custom" :label="__('Custom')" />
             <flux:input wire:model="company_type" :label="__('Company Type')" />
             <flux:input wire:model="status" :label="__('Status')" />
             <flux:input wire:model="effective_date" :label="__('Effective Date')" type="date" />
             <flux:input wire:model="registration_date" :label="__('Registration Date')" type="date" />
             <flux:input wire:model="last_annual_return" :label="__('Last Annual Return')" type="date" />
             <flux:input wire:model="next_annual_return" :label="__('Next Annual Return')" type="date" />
+            <flux:input wire:model="next_financial_statement_due" :label="__('Next Accounts')" type="date" />
             <flux:input wire:model="last_accounts" :label="__('Last Accounts')" type="date" />
             <flux:input wire:model="postcode" :label="__('Postcode')" />
             <flux:input wire:model="address_line_1" :label="__('Address Line 1')" />

@@ -155,7 +155,7 @@
                             class="px-4 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <div class="text-sm/6 text-gray-500">{{ $company->company_number }}</div>
                             <div class="text-sm/6 text-gray-900">{{ $company->name }}</div>
-                            <div class="mt-1 text-xs/5 text-gray-500">{{ $company->address }}</div>
+                            <div class="text-sm/6 text-gray-500">{{ $company->custom }}</div>
                         </th>
                         <td class="px-4 py-1">
                             <div class="mt-1 text-xs/5 text-gray-500">{{ $company->next_annual_return }}</div>
@@ -217,14 +217,14 @@
                                 </button>
                                 <div id="apple-imac-27-dropdown" x-show="dropdown" @click.away="dropdown = false"
                                     class="absolute right-0 z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                    {{-- <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                         aria-labelledby="apple-imac-27-dropdown-button">
                                         <li>
-                                            {{-- <div wire:click="updateSubmission({{ $company->id }})"
+                                            <div wire:click="updateSubmission({{ $company->id }})"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                Update Submissions</div> --}}
+                                                Update Submissions</div>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
                                     <div class="py-1">
                                         <a href="#"
                                             class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-not-allowed">Delete</a>

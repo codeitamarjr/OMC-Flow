@@ -12,12 +12,14 @@ class CompanyEdit extends Component
 
     public string $company_number;
     public string $name;
+    public ?string $custom = null;
     public ?string $company_type = null;
     public ?string $status = null;
     public ?string $effective_date = null;
     public ?string $registration_date = null;
     public ?string $last_annual_return = null;
     public ?string $next_annual_return = null;
+    public ?string $next_financial_statement_due = null;
     public ?string $last_accounts = null;
     public ?string $postcode = null;
     public ?string $address_line_1 = null;
@@ -33,12 +35,14 @@ class CompanyEdit extends Component
         return [
             'company_number' => 'required|string|unique:companies,company_number,' . $this->company->id,
             'name' => 'required|string|max:255',
+            'custom' => 'nullable|string',
             'company_type' => 'nullable|string',
             'status' => 'nullable|string',
             'effective_date' => 'nullable|date',
             'registration_date' => 'nullable|date',
             'last_annual_return' => 'nullable|date',
             'next_annual_return' => 'nullable|date',
+            'next_financial_statement_due' => 'nullable|date',
             'last_accounts' => 'nullable|date',
             'postcode' => 'nullable|string|max:1000',
             'address_line_1' => 'nullable|string|max:1000',
@@ -61,12 +65,14 @@ class CompanyEdit extends Component
         $this->fill($company->only([
             'company_number',
             'name',
+            'custom',
             'company_type',
             'status',
             'effective_date',
             'registration_date',
             'last_annual_return',
             'next_annual_return',
+            'next_financial_statement_due',
             'last_accounts',
             'postcode',
             'address_line_1',
@@ -86,12 +92,14 @@ class CompanyEdit extends Component
         $this->company->update([
             'company_number' => $this->company_number,
             'name' => $this->name,
+            'custom' => $this->custom,
             'company_type' => $this->company_type,
             'status' => $this->status,
             'effective_date' => $this->effective_date,
             'registration_date' => $this->registration_date,
             'last_annual_return' => $this->last_annual_return,
             'next_annual_return' => $this->next_annual_return,
+            'next_financial_statement_due' => $this->next_financial_statement_due,
             'last_accounts' => $this->last_accounts,
             'postcode' => $this->postcode,
             'address_line_1' => $this->address_line_1,

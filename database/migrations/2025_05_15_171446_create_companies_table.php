@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('business_id')->constrained()->onDelete('cascade');
 
             $table->string('name');
+            $table->string('custom')->nullable();
             $table->string('company_number')->unique();
             $table->string('company_type');
             $table->string('status')->default('Active');
