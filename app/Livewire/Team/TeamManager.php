@@ -15,6 +15,7 @@ class TeamManager extends Component
     public string $email = '';
     public string $currentUserRole = 'member';
     public $teamMembers = [];
+    public $role = [];
 
     public function mount()
     {
@@ -156,6 +157,19 @@ class TeamManager extends Component
         session()->flash('success', 'User removed.');
     }
 
+    public function assignRole(int $userId, string $role): void
+    {
+        $business = Auth::user()->currentBusiness;
+
+        if (Auth::user()->roleInCurrentBusiness() !== 'admin') {
+            abort(403);
+        }
+
+        $business->users()->updateExistingPivot($userId, ['role' => $role]);
+
+        $this->loadTeam();
+        session()->flash('success', 'Role updated successfully.');
+    }
 
     public function render()
     {

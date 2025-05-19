@@ -27,10 +27,32 @@
                         <div class="text-xs text-gray-400">Role: {{ $member->pivot->role ?? 'N/A' }}</div>
                     </div>
                     @if (auth()->user()->roleInCurrentBusiness() === 'admin' && $member->id !== auth()->id())
-                        <flux:button wire:click="reSendInvite({{ $member->id }})" variant="outline" size="sm"
-                            class="text-blue-500">Re-Invite</flux:button>
-                        <flux:button wire:click="remove({{ $member->id }})" variant="outline" size="sm"
-                            class="text-red-500">Remove</flux:button>
+                        <div class="flex gap-2">
+                            <flux:dropdown position="bottom" align="start">
+
+                                <flux:button variant="outline" size="sm" class="flex">
+                                    <div>Roles</div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                                    </svg>
+                                </flux:button>
+
+                                <flux:menu class="w-[220px]">
+                                    <flux:menu.radio.group>
+                                        <flux:menu.radio label="Admin"
+                                            wire:click="assignRole({{ $member->id }}, 'admin')" value="admin" />
+                                        <flux:menu.radio label="Member"
+                                            wire:click="assignRole({{ $member->id }}, 'member')" value="member" />
+                                    </flux:menu.radio.group>
+                                </flux:menu>
+                            </flux:dropdown>
+                            <flux:button wire:click="reSendInvite({{ $member->id }})" variant="outline" size="sm"
+                                class="text-blue-500">Re-Invite</flux:button>
+                            <flux:button wire:click="remove({{ $member->id }})" variant="outline" size="sm"
+                                class="text-red-500">Remove</flux:button>
+                        </div>
                     @endif
                 </li>
             @endforeach
