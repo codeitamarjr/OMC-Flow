@@ -18,8 +18,8 @@ class Company extends Component
     public $perPage = 20;
     public $sortBy = 'next_annual_return';
     public $sortDirection = 'asc';
-    public array $selectedTagFilters = [];
     public $allTags = [];
+    public array $selectedTagFilters = [];
     public ?ModelsCompany $selectedCompany = null;
     public bool $showDetailsModal = false;
 

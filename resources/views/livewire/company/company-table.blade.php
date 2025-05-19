@@ -20,15 +20,6 @@
         </div>
         <div
             class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-            <button type="button"
-                class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <path clip-rule="evenodd" fill-rule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                </svg>
-                Add product
-            </button>
             <div class="flex items-center space-x-3 w-full md:w-auto">
                 <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
                     class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
@@ -55,66 +46,61 @@
                             all</a>
                     </div>
                 </div>
-                <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
-                    class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                    type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2 text-gray-400"
-                        viewbox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Filter
-                    <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path clip-rule="evenodd" fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                    </svg>
-                </button>
-                <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-                    <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose brand</h6>
-                    <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
-                        <li class="flex items-center">
-                            <input id="apple" type="checkbox" value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <label for="apple"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Apple (56)</label>
-                        </li>
-                        <li class="flex items-center">
-                            <input id="fitbit" type="checkbox" value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <label for="fitbit"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Microsoft (16)</label>
-                        </li>
-                        <li class="flex items-center">
-                            <input id="razor" type="checkbox" value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <label for="razor"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Razor (49)</label>
-                        </li>
-                        <li class="flex items-center">
-                            <input id="nikon" type="checkbox" value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <label for="nikon"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Nikon (12)</label>
-                        </li>
-                        <li class="flex items-center">
-                            <input id="benq" type="checkbox" value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                            <label for="benq"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">BenQ (74)</label>
-                        </li>
-                    </ul>
+
+                {{-- Filter --}}
+                <div class="relative" x-data="{ showDropDown: false }">
+                    <button id="filterDropdownButton" @click="showDropDown = !showDropDown"
+                        data-dropdown-toggle="filterDropdown"
+                        class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2 text-gray-400"
+                            viewbox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Filter
+                        <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                        </svg>
+                    </button>
+                    @if ($allTags->isEmpty())
+                        <div class="absolute right-0 z-10 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
+                            x-show="showDropDown">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">No tags available</p>
+                        </div>
+                    @else
+                        {{-- Dropdown menu --}}
+                        <div id="filterDropdown" x-show="showDropDown" @click.away="showDropDown = false"
+                            class="absolute right-0 z-10 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                            <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Filter by Tag
+                            </h6>
+                            <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
+                                @foreach ($allTags as $tag)
+                                    <li class="flex items-center">
+                                        <input type="checkbox" value="{{ $tag->id }}" id="tag-{{ $tag->id }}"
+                                            wire:model.live="selectedTagFilters"
+                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="tag-{{ $tag->id }}"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            {{ $tag->name }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full h-full text-sm text-left text-gray-500 dark:text-gray-400"
-            wire:loading.class="opacity-50">
+        <table class="w-full h-full text-sm text-left text-gray-500 dark:text-gray-400" wire:loading.class="opacity-50">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                    <th scope="col" class="px-4 py-3">Company Registration</th>
+                    <th scope="col" class="px-4 py-3">Company</th>
                     <th scope="col" class="px-4 py-3" wire:click="sort('next_annual_return')">
                         <div class="flex items-center">
                             @if ($sortBy === 'next_annual_return')
@@ -155,7 +141,20 @@
                             class="px-4 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <div class="text-sm/6 text-gray-500">{{ $company->company_number }}</div>
                             <div class="text-sm/6 text-gray-900">{{ $company->name }}</div>
-                            <div class="text-sm/6 text-gray-500">{{ $company->custom }}</div>
+                            <div class="text-sm/6 text-gray-500">{{ $company->custom }}
+                                @if ($company->tags->isNotEmpty())
+                                    @foreach ($company->tags as $tag)
+                                        <span
+                                            class="inline-flex items-center gap-x-1 rounded-full px-1.5 py-0.5 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200 bg-indigo-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700">
+                                            <svg class="size-1.5 fill-indigo-500" viewBox="0 0 6 6"
+                                                aria-hidden="true">
+                                                <circle cx="3" cy="3" r="3" />
+                                            </svg>
+                                            {{ $tag->name }}
+                                        </span>
+                                    @endforeach
+                                @endif
+                            </div>
                         </th>
                         <td class="px-4 py-1">
                             <div class="mt-1 text-xs/5 text-gray-500">{{ $company->next_annual_return }}</div>
@@ -203,8 +202,8 @@
                                 {{ $company->ar_status }}
                             </span>
                         </td>
-                        <td class="px-4 py-1 flex justify-end">
-                            <div class="" x-data="{ dropdown: false }">
+                        <td class="px-4 py-1">
+                            <div x-data="{ dropdown: false }">
                                 <button id="apple-imac-27-dropdown-button"
                                     data-dropdown-toggle="apple-imac-27-dropdown" @click="dropdown = !dropdown"
                                     class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"

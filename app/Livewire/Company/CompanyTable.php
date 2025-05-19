@@ -20,7 +20,16 @@ class CompanyTable extends Component
     public $perPage = 10;
     public $sortBy = 'next_annual_return';
     public $sortDirection = 'asc';
+    public $allTags = [];
+    public $selectedTagFilters = [];
 
+    public function mount()
+    {
+        $this->allTags = \App\Models\Tag::where('business_id', Auth::user()->current_business_id)
+            ->get(['id', 'name']);
+
+        $this->selectedTagFilters = session()->get('selected_tag_filters', []);
+    }
     /**
      * A computed property that returns a paginated list of companies
      * belonging to the current business, filtered by the search term.
@@ -40,6 +49,11 @@ class CompanyTable extends Component
                     $q->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('custom', 'like', '%' . $this->search . '%')
                         ->orWhere('company_number', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->selectedTagFilters, function ($query) {
+                $query->whereHas('tags', function ($q) {
+                    $q->whereIn('tags.id', $this->selectedTagFilters);
                 });
             })
             ->when($this->sortBy === 'ar_status', function ($query) use ($today, $soon) {
