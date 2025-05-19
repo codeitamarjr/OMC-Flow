@@ -171,6 +171,9 @@
                                         <p class="text-base font-semibold text-gray-900 dark:text-white">
                                             {{ $company->name }}
                                         </p>
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                            {{ $company->custom }}
+                                        </span>
                                         @if ($company->tags->isNotEmpty())
                                             @foreach ($company->tags as $tag)
                                                 <span

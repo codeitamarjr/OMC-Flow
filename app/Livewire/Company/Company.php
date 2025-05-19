@@ -54,6 +54,7 @@ class Company extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('custom', 'like', '%' . $this->search . '%')
                         ->orWhere('company_number', 'like', '%' . $this->search . '%');
                 });
             })
