@@ -145,9 +145,6 @@
                             <th scope="col" class="px-6 py-2">
                                 AR01 Compliance Status
                             </th>
-                            <th scope="col" class="px-6 py-2">
-                                Last Filed
-                            </th>
                             <th scope="col" class="px-6 py-2"></th>
                         </tr>
                     </thead>
@@ -234,12 +231,6 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-1.5">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                        {{ $company->last_filed }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-1.5">
                                     <div wire:click="showCompanySubmissions({{ $company->id }})">
                                         <div
                                             class="relative inline-flex items-center p-3 text-sm font-medium text-center">
@@ -255,8 +246,6 @@
                                                 {{ $company->submissionDocuments->count() }}
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </td>
                             </tr>
