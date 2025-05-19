@@ -119,7 +119,6 @@ class CompanyTable extends Component
     public function updatingSelectedTagFilters()
     {
         session()->put('selected_tag_filters', $this->selectedTagFilters);
-        $this->resetPage();
     }
 
 
