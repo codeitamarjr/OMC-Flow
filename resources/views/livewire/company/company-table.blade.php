@@ -129,13 +129,13 @@
                             Annual Return
                         </div>
                     </th>
-                    <th scope="col" class="px-4 py-3" wire:click="sort('status')">
+                    <th scope="col" class="px-4 py-3" wire:click="sort('ar_status')">
                         <div class="flex items-center">
-                            @if ($sortBy === 'status')
+                            @if ($sortBy === 'ar_status')
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
                                     class="size-6 duration-400 transform  ease-in-out
-                                @if ($sortDirection === 'asc' && $sortBy === 'status') rotate-180 @endif">
+                                @if ($sortDirection === 'asc' && $sortBy === 'ar_status') rotate-180 @endif">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
@@ -160,10 +160,48 @@
                         <td class="px-4 py-1">
                             <div class="mt-1 text-xs/5 text-gray-500">{{ $company->next_annual_return }}</div>
                         </td>
-                        <td class="px-4 py-1">
-                            <div class="mt-1 text-xs/5 text-gray-500">
-                                {{ $company->status }}
-                            </div>
+                        <td class="px-4 py-1" x-data="{ tooltip: false }">
+                            @php
+                                $statusClasses = [
+                                    'Overdue' => 'bg-red-100 text-red-700',
+                                    'Due Soon' => 'bg-yellow-100 text-yellow-700',
+                                    'Compliant' => 'bg-green-100 text-green-700',
+                                ];
+                            @endphp
+                            <span
+                                class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium 
+                                            {{ $statusClasses[$company->ar_status] ?? $statusClasses['Compliant'] }}">
+                                {{-- Tooltip --}}
+                                {{-- Tooltip Trigger --}}
+                                <div @mouseover="tooltip = true" @mouseleave="tooltip = false" class="relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4 cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                    </svg>
+
+                                    {{-- Tooltip Box --}}
+                                    <div x-show="tooltip" x-transition:enter="transition ease-out duration-500"
+                                        x-transition:enter-start="opacity-0 translate-y-1"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        x-transition:leave="transition ease-in duration-150"
+                                        x-transition:leave-start="opacity-100 translate-y-0"
+                                        x-transition:leave-end="opacity-0 translate-y-1"
+                                        class="absolute left-1/2 top-full mt-2 -translate-x-1/2 z-50 w-[200px] rounded-lg bg-gray-700 py-1.5 px-3 font-sans text-sm font-normal text-white text-center">
+                                        @if ($company->ar_status === 'Overdue')
+                                            This company is overdue
+                                            {{ round(-now()->diffInDays($company->next_annual_return)) }} days
+                                            for its annual return filing.
+                                        @elseif ($company->ar_status === 'Due Soon')
+                                            This company is due in less than 30 days for its annual return
+                                            filing soon.
+                                        @else
+                                            This company is compliant with its annual return filing.
+                                        @endif
+                                    </div>
+                                </div>
+                                {{ $company->ar_status }}
+                            </span>
                         </td>
                         <td class="px-4 py-1 flex justify-end">
                             <div class="" x-data="{ dropdown: false }">
@@ -182,9 +220,9 @@
                                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                         aria-labelledby="apple-imac-27-dropdown-button">
                                         <li>
-                                            <div wire:click="updateSubmission({{ $company->id }})"
+                                            {{-- <div wire:click="updateSubmission({{ $company->id }})"
                                                 class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                Update Submissions</div>
+                                                Update Submissions</div> --}}
                                         </li>
                                     </ul>
                                     <div class="py-1">

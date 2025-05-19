@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Company;
 
+use Carbon\Carbon;
 use App\Models\Company;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Jobs\CompanyFetchCroSubmissions;
@@ -28,6 +30,9 @@ class CompanyTable extends Component
     #[Computed]
     public function companies()
     {
+        $today = Carbon::today()->toDateString();
+        $soon  = Carbon::today()->addDays(56)->toDateString();
+
         return Company::query()
             ->where('business_id', Auth::user()->current_business_id)
             ->when($this->search, function ($query) {
@@ -35,6 +40,20 @@ class CompanyTable extends Component
                     $q->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('company_number', 'like', '%' . $this->search . '%');
                 });
+            })
+            ->when($this->sortBy === 'ar_status', function ($query) use ($today, $soon) {
+                $query->select('companies.*')
+                    ->selectRaw(<<<SQL
+                    CASE
+                      WHEN next_annual_return IS NULL        THEN 4
+                      WHEN next_annual_return < ?           THEN 1
+                      WHEN next_annual_return <= ?          THEN 2
+                      ELSE 3
+                    END AS ar_status_order
+                  SQL, [$today, $soon])
+                    ->orderBy('ar_status_order', $this->sortDirection);
+            }, function ($query) {
+                $query->orderBy($this->sortBy, $this->sortDirection);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
@@ -95,7 +114,7 @@ class CompanyTable extends Component
             'type' => 'success',
             'message' => 'Submission documents updated successfully.',
         ]);
-    }  
+    }
 
     public function render()
     {

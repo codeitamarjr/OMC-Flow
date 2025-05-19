@@ -171,16 +171,16 @@
                                         <p class="text-base font-semibold text-gray-900 dark:text-white">
                                             {{ $company->name }}
                                         </p>
-                                        @if($company->tags->isNotEmpty())
+                                        @if ($company->tags->isNotEmpty())
                                             @foreach ($company->tags as $tag)
                                                 <span
-                                                        class="inline-flex items-center gap-x-1 rounded-full px-1.5 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200 bg-blue-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700">
-                                                        <svg class="size-1.5 fill-indigo-500" viewBox="0 0 6 6"
-                                                            aria-hidden="true">
-                                                            <circle cx="3" cy="3" r="3" />
-                                                        </svg>
+                                                    class="inline-flex items-center gap-x-1 rounded-full px-1.5 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200 bg-blue-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700">
+                                                    <svg class="size-1.5 fill-indigo-500" viewBox="0 0 6 6"
+                                                        aria-hidden="true">
+                                                        <circle cx="3" cy="3" r="3" />
+                                                    </svg>
                                                     {{ $tag->name }}
-                                                    </span>
+                                                </span>
                                             @endforeach
                                         @endif
                                     </div>
@@ -192,7 +192,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-1.5 flex items-center" x-data="{ tooltip: false }">
+                                <td class="px-6 py-1.5" x-data="{ tooltip: false }">
                                     @php
                                         $statusClasses = [
                                             'Overdue' => 'bg-red-100 text-red-700',
