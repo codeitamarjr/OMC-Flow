@@ -72,7 +72,7 @@ class TeamManager extends Component
                 'current_business_id' => $business->id,
             ]);
 
-            $this->sendInvitationEmail($user);
+            $this->sendIntiveEmail($user);
         }
 
         $business->users()->attach($user->id, ['role' => 'member']);
@@ -83,12 +83,24 @@ class TeamManager extends Component
     }
 
     /**
+     * Re-send the invitation email to the specified user.
+     *
+     * @param \App\Models\User $user The user to whom the invitation email is resent.
+     * @return void
+     */
+    public function reSendInvite(\App\Models\User $user): void
+    {
+        $this->sendInvitationOnlyEmail($user);
+        session()->flash('success', 'Invitation resent successfully.');
+    }
+
+    /**
      * Send an invitation email to the specified user with a password reset link.
      *
      * @param \App\Models\User $user The user to whom the invitation email is sent.
      * @return void
      */
-    protected function sendInvitationEmail(\App\Models\User $user): void
+    protected function sendIntiveEmail(\App\Models\User $user): void
     {
         $token = Password::createToken($user);
 

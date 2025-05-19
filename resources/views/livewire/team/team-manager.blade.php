@@ -27,6 +27,8 @@
                         <div class="text-xs text-gray-400">Role: {{ $member->pivot->role ?? 'N/A' }}</div>
                     </div>
                     @if (auth()->user()->roleInCurrentBusiness() === 'admin' && $member->id !== auth()->id())
+                        <flux:button wire:click="reSendInvite({{ $member->id }})" variant="outline" size="sm"
+                            class="text-blue-500">Re-Invite</flux:button>
                         <flux:button wire:click="remove({{ $member->id }})" variant="outline" size="sm"
                             class="text-red-500">Remove</flux:button>
                     @endif
