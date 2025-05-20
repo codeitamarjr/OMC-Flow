@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('days_from_ard')->default(0);
             $table->boolean('completed')->default(false);
             $table->timestamp('completed_at')->nullable();
+            $table->foreignId('completed_by')->nullable()->constrained('users')->nullOnDelete();
         });
     }
 

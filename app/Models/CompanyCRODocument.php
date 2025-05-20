@@ -21,6 +21,7 @@ class CompanyCRODocument extends Model
         'days_from_ard',
         'completed',
         'completed_at',
+        'completed_by',
     ];
 
     protected $casts = [
@@ -48,5 +49,15 @@ class CompanyCRODocument extends Model
 
         return Carbon::parse($this->company->next_annual_return)
             ->addDays($this->days_from_ard);
+    }
+
+    /**
+     * Get the user that owns the company CRO document.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'completed_by');
     }
 }
