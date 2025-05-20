@@ -37,6 +37,8 @@
                     <span class="text-sm text-gray-500">File must be in .xlsx or .csv format.</span>
                     <span class="text-sm text-gray-500">Column header must be "company_number","custom" and "tags", in
                         that order, tag's can hold multiple tags separated by a "/".</span>
+                    <span class="text-sm text-gray-500">Download a sample file <a href="/files/import-sample.xlsx"
+                            class="underline">here</a></span>
                     @error('file')
                         <span class="text-sm text-red-500">{{ $message }}</span>
                     @enderror
