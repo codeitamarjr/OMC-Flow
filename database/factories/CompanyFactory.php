@@ -18,7 +18,7 @@ class CompanyFactory extends Factory
     {
         return [
             'business_id' => \App\Models\Business::factory(),
-            'name' => 'Company ' . $this->faker->company,
+            'name' => 'OMC ' . $this->faker->company,
             'custom' => null,
             'company_number' => strtoupper($this->faker->unique()->bothify('CRO###??###')),
             'company_type' => 'Private',

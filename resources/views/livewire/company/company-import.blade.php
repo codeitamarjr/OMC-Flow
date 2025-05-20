@@ -31,10 +31,12 @@
 
             <form wire:submit.prevent="preview" class="space-y-4">
 
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-0.5">
                     <input type="file" wire:model="file" accept=".xlsx,.csv"
                         class="w-full text-slate-500 font-medium text-sm bg-gray-100 file:cursor-pointer cursor-pointer file:border-0 file:py-2 file:px-4 file:mr-4 file:bg-gray-800 file:hover:bg-gray-700 file:text-white rounded" />
-                        <span class="text-sm text-gray-500">File must be in .xlsx or .csv format. Column header must be "company_number"</span>
+                    <span class="text-sm text-gray-500">File must be in .xlsx or .csv format.</span>
+                    <span class="text-sm text-gray-500">Column header must be "company_number","custom" and "tags", in
+                        that order, tag's can hold multiple tags separated by a "/".</span>
                     @error('file')
                         <span class="text-sm text-red-500">{{ $message }}</span>
                     @enderror
@@ -88,7 +90,8 @@
                                     {{ $row['number'] }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $row['name'] ?? '-' }}
+                                    <div class="font-bold text-gray-900 dark:text-white">{{ $row['name'] ?? '-' }}</div>
+                                    <span class="text-xs text-gray-500">{{ $row['custom'] ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     {{ $row['status'] ?? '-' }}

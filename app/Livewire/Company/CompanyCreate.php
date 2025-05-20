@@ -158,7 +158,7 @@ class CompanyCreate extends Component
             'company_type_code' => $this->company_type_code,
             'company_status_code' => $this->company_status_code,
         ]);
-        CompanyFetchCroSubmissions::dispatch($company);
+        // CompanyFetchCroSubmissions::dispatch($company);
 
         $this->reset([
             'company_number',

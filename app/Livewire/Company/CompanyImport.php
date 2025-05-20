@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Company;
 
+use App\Models\Tag;
 use App\Models\Company;
 use Livewire\Component;
 use Maatwebsite\Excel\Excel;
@@ -44,6 +45,8 @@ class CompanyImport extends Component
 
         foreach ($collection as $row) {
             $number = trim($row['company_number'] ?? '');
+            $custom = trim($row['custom'] ?? '');
+            $tags = trim($row['tags'] ?? '');
 
             if (!preg_match('/^\d{5,6}$/', $number)) {
                 $this->previewData[] = [
@@ -59,6 +62,7 @@ class CompanyImport extends Component
 
                 $this->previewData[] = [
                     'number' => $number,
+                    'custom' => $custom,
                     'valid' => true,
                     'name' => $details['company_name'] ?? '',
                     'type' => $details['comp_type_desc'] ?? '',
@@ -78,6 +82,7 @@ class CompanyImport extends Component
                     'company_type_code' => $details['company_type_code'] ?? null,
                     'company_status_code' => $details['company_status_code'] ?? null,
                     'raw' => $details, // stash full record for saving later
+                    'tags' => $tags
                 ];
             } catch (\Exception $e) {
                 $this->previewData[] = [
@@ -104,6 +109,8 @@ class CompanyImport extends Component
         $this->imported = [];
         $this->skipped = [];
 
+        $businessId = Auth::user()->current_business_id;
+
         foreach ($this->previewData as $entry) {
             if (!$entry['valid']) {
                 $this->skipped[] = [$entry['number'], $entry['reason']];
@@ -111,6 +118,8 @@ class CompanyImport extends Component
             }
 
             $number = $entry['number'];
+            $custom = $entry['custom'];
+            $tags = $entry['tags'];
 
             if (Company::where('company_number', $number)->exists()) {
                 $this->skipped[] = [$number, 'Already exists'];
@@ -123,6 +132,7 @@ class CompanyImport extends Component
                 'business_id' => Auth::user()->current_business_id,
                 'company_number' => $number,
                 'name' => strtoupper($data['company_name'] ?? ''),
+                'custom' => strtoupper($custom ?? ''),
                 'company_type' => $data['comp_type_desc'] ?? null,
                 'status' => $data['company_status_desc'] ?? null,
                 'effective_date' => $this->formatDate($data['company_status_date'] ?? null),
@@ -139,8 +149,28 @@ class CompanyImport extends Component
                 'company_type_code' => $data['company_type_code'] ?? null,
                 'company_status_code' => $data['company_status_code'] ?? null,
             ]);
-            CompanyFetchCroSubmissions::dispatch($company);
 
+            $tagNames = array_filter(
+                array_map('trim', explode('/', $tags)),
+                fn($n) => $n !== ''
+            );
+
+            $tagIds = [];
+            foreach ($tagNames as $rawName) {
+                $name = strtoupper($rawName);
+
+                $tag = Tag::firstOrCreate([
+                    'business_id' => $businessId,
+                    'name'        => $name,
+                ]);
+
+                $tagIds[] = $tag->id;
+            }
+
+            $company->tags()->syncWithoutDetaching($tagIds);
+
+
+            // CompanyFetchCroSubmissions::dispatch($company);
 
             $this->imported[] = $number;
         }
@@ -171,6 +201,8 @@ class CompanyImport extends Component
         }
 
         $number = $entry['number'];
+        $custom = $entry['custom'];
+        $tags = $entry['tags'];
 
         if (Company::where('company_number', $number)->exists()) {
             $this->skipped[] = [$number, 'Already exists'];
@@ -180,10 +212,11 @@ class CompanyImport extends Component
 
         $data = $entry['raw'];
 
-        Company::create([
+        $company = Company::create([
             'business_id' => Auth::user()->current_business_id,
             'company_number' => $number,
             'name' => strtoupper($data['company_name'] ?? ''),
+            'custom' => strtoupper($custom ?? ''),
             'company_type' => $data['comp_type_desc'] ?? null,
             'status' => $data['company_status_desc'] ?? null,
             'effective_date' => $this->formatDate($data['company_status_date'] ?? null),
@@ -200,6 +233,17 @@ class CompanyImport extends Component
             'company_type_code' => $data['company_type_code'] ?? null,
             'company_status_code' => $data['company_status_code'] ?? null,
         ]);
+
+        if (strpos($tags, ',') !== false || strpos($tags, '/') !== false) {
+            $tags = explode(',', $tags);
+            $tags = array_map('trim', $tags);
+        }
+
+        foreach ($tags as $tag) {
+            $company->tags()->attach($tag);
+        }
+
+        // CompanyFetchCroSubmissions::dispatch($company);
 
         $this->imported[] = $number;
         unset($this->previewData[$index]);
