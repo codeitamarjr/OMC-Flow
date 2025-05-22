@@ -102,7 +102,8 @@
                                                         <span class="h-10 w-10 rounded-full bg-gray-800/40"></span>
                                                     </div>
                                                     <div class="ml-4">
-                                                        <p class="text-sm font-medium text-gray-200">Import CRO's
+                                                        <p class="text-sm font-medium text-gray-200">
+                                                            Import CRO's numbers in bulk
                                                         </p>
                                                     </div>
                                                 </li>
@@ -112,7 +113,7 @@
                                                     </div>
                                                     <div class="ml-4">
                                                         <p class="text-sm font-medium text-gray-200">
-                                                            Overview Compliances
+                                                            Overview Compliances and Due Dates( B1...)
                                                         </p>
                                                     </div>
                                                 </li>
