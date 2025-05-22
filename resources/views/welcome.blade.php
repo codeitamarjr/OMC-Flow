@@ -41,7 +41,7 @@
                                     class="rounded-full bg-indigo-600/10 px-3 py-1 text-sm/6 font-semibold text-indigo-600 ring-1 ring-inset ring-indigo-600/10">What's
                                     new</span>
                                 <span class="inline-flex items-center space-x-2 text-sm/6 font-medium text-gray-600">
-                                    <span>Just shipped v0.1.0</span>
+                                    <span>Just launched v0.1.0</span>
                                     <svg class="size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"
                                         aria-hidden="true" data-slot="icon">
                                         <path fill-rule="evenodd"
