@@ -9,7 +9,6 @@ use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\CompanyFetchCroSubmissions;
 use App\Models\Company as ModelsCompany;
-use App\Models\CompanyCroDocument;
 
 class Company extends Component
 {
@@ -134,18 +133,18 @@ class Company extends Component
     /**
      * Toggle the 'completed' status on a CRO document.
      */
-    public function toggleCroDocument(int $docId)
-    {
-        $doc = CompanyCroDocument::findOrFail($docId);
+    // public function toggleCroDocument(int $docId)
+    // {
+    //     $doc = CompanyCroDocument::findOrFail($docId);
 
-        $doc->completed = ! $doc->completed;
-        $doc->completed_at = $doc->completed ? now() : null;
-        $doc->completed_by = Auth::user()->id;
-        $doc->save();
+    //     $doc->completed = ! $doc->completed;
+    //     $doc->completed_at = $doc->completed ? now() : null;
+    //     $doc->completed_by = Auth::user()->id;
+    //     $doc->save();
 
-        $this->selectedCompany->load('CroDocuments');
-        $this->croDocuments = $this->selectedCompany->CroDocuments->all();
-    }
+    //     $this->selectedCompany->load('CroDocuments');
+    //     $this->croDocuments = $this->selectedCompany->CroDocuments->all();
+    // }
 
     public function render()
     {

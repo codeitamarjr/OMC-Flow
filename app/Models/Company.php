@@ -35,21 +35,6 @@ class Company extends Model
         'company_status_code',
     ];
 
-    /**
-     * Seed the standard CRO-document requirements whenever
-     * a new Company is created.
-     */
-    protected static function booted()
-    {
-        static::created(function (Company $company) {
-            $company->CroDocuments()->create([
-                'name'          => 'Annual Return',
-                'code'          => 'B1',
-                'description'   => 'Must be filed within 56 days of the “Return Made Up To” date.',
-                'days_from_ard' => 56,
-            ]);
-        });
-    }
 
     /**
      * Get the business that the company belongs to.
@@ -105,15 +90,5 @@ class Company extends Model
             $diff <= 56 => 'Due Soon',
             default => 'Compliant',
         };
-    }
-
-    /**
-     * Get the CRO documents associated with the company.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\CompanyCRODocument>
-     */
-    public function CroDocuments(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(CompanyCRODocument::class);
     }
 }
