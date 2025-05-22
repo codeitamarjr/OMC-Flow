@@ -35,6 +35,27 @@ class Company extends Model
         'company_status_code',
     ];
 
+    /**
+     * Eloquent event hook for when a Company is created.
+     *
+     * When a Company is created, this method retrieves all current CroDocDefinition
+     * IDs and associates them with the newly created Company, setting the completed
+     * status to false for each association. The operation is performed without
+     * detaching existing associations.
+     */
+    protected static function booted()
+    {
+        static::created(function (Company $company) {
+            $defs = CroDocDefinition::all()->pluck('id');
+            if ($defs->isNotEmpty()) {
+                $company->croDocDefinitions()
+                    ->syncWithoutDetaching(
+                        $defs->mapWithKeys(fn($id) => [$id => ['completed' => false]])
+                            ->toArray()
+                    );
+            }
+        });
+    }
 
     /**
      * Get the business that the company belongs to.
@@ -90,5 +111,21 @@ class Company extends Model
             $diff <= 56 => 'Due Soon',
             default => 'Compliant',
         };
+    }
+
+    /**
+     * Returns the CRO document definitions associated with the company.
+     *
+     * Each CRO document definition is associated with a pivot row in the
+     * company_cro_document table which contains the completed and completed_at
+     * timestamps.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function croDocDefinitions()
+    {
+        return $this->belongsToMany(CroDocDefinition::class, 'company_cro_document')
+            ->withPivot(['completed', 'completed_at', 'completed_by'])
+            ->withTimestamps();
     }
 }

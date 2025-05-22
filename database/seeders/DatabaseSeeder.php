@@ -11,7 +11,7 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-   
+
     public function run(): void
     {
         User::factory(100)->create()->each(function ($user) {
@@ -40,5 +40,9 @@ class DatabaseSeeder extends Seeder
                 ]);
             });
         });
+
+        $this->call([
+            CroDocDefinitionSeeder::class,
+        ]);
     }
 }

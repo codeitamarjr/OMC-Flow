@@ -22,8 +22,8 @@ class Company extends Component
     public array $selectedTagFilters = [];
     public ?ModelsCompany $selectedCompany = null;
     public bool $showDetailsModal = false;
-    public ?array $croDocuments = null;
-    public bool $showCroDocumentsModal = false;
+    public ?array $croDefinitions = null;
+    public bool $showCroDefinitionsModal = false;
 
 
     public function mount()
@@ -53,6 +53,7 @@ class Company extends Component
     public function companies()
     {
         return Business::find(Auth::user()->currentBusiness->id)->companies()
+            ->with('croDocDefinitions')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -116,7 +117,7 @@ class Company extends Component
         $this->showDetailsModal = true;
     }
 
-    public function showCroDocuments(ModelsCompany $company)
+    public function showCroDefinition(ModelsCompany $company)
     {
         abort_unless(
             Auth::user()->businesses()->where('business_id', $company->business_id)->exists(),
@@ -126,25 +127,40 @@ class Company extends Component
 
         $this->selectedCompany = $company;
 
-        $this->croDocuments = $company->CroDocuments->loadMissing('user')->all();
-        $this->showCroDocumentsModal = true;
+        $this->croDefinitions = $company->croDocDefinitions->all();
+        $this->showCroDefinitionsModal = true;
     }
 
     /**
-     * Toggle the 'completed' status on a CRO document.
+     * Toggles the completion status of a CRO document definition for the selected company.
+     *
+     * Finds the specified CRO document definition by its ID in the selected company's
+     * list of document definitions. Flips its completion status and updates the 
+     * pivot table with the new status, timestamp, and user ID if completed.
+     * Reloads the company's CRO document definitions after the update.
+     *
+     * @param int $definitionId The ID of the CRO document definition to toggle.
      */
-    // public function toggleCroDocument(int $docId)
-    // {
-    //     $doc = CompanyCroDocument::findOrFail($docId);
+    public function toggleCroDocument(int $definitionId)
+    {
+        $company = $this->selectedCompany;
 
-    //     $doc->completed = ! $doc->completed;
-    //     $doc->completed_at = $doc->completed ? now() : null;
-    //     $doc->completed_by = Auth::user()->id;
-    //     $doc->save();
+        $current = $company->croDocDefinitions
+            ->first(fn($d) => $d->id === $definitionId)
+            ->pivot
+            ->completed;
 
-    //     $this->selectedCompany->load('CroDocuments');
-    //     $this->croDocuments = $this->selectedCompany->CroDocuments->all();
-    // }
+        $new = ! $current;
+
+        $company->croDocDefinitions()
+            ->updateExistingPivot($definitionId, [
+                'completed'    => $new,
+                'completed_at' => $new ? now() : null,
+                'completed_by' => $new ? Auth::id() : null,
+            ]);
+
+        $this->selectedCompany->load('croDocDefinitions');
+    }
 
     public function render()
     {
