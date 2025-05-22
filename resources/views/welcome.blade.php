@@ -133,7 +133,7 @@
                                                     </div>
                                                     <div class="ml-4">
                                                         <p class="text-sm font-medium text-gray-200">
-                                                            Easuly share and Colaborate with your team.
+                                                            Easily share and Colaborate with your team.
                                                         </p>
                                                     </div>
                                                 </li>
