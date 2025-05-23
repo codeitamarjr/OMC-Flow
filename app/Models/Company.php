@@ -124,8 +124,25 @@ class Company extends Model
      */
     public function croDocDefinitions()
     {
-        return $this->belongsToMany(CroDocDefinition::class, 'company_cro_document')
+        return $this->belongsToMany(
+            CroDocDefinition::class,
+            'company_cro_document',
+            'company_id',
+            'cro_doc_definition_id'
+        )
             ->withPivot(['completed', 'completed_at', 'completed_by'])
             ->withTimestamps();
+    }
+
+    /**
+     * Returns the number of incomplete CRO document definitions for the company.
+     *
+     * @return int The number of incomplete CRO document definitions.
+     */
+    public function getCroIncompleteCountAttribute(): int
+    {
+        return $this->croDocDefinitions
+            ->where('pivot.completed', false)
+            ->count();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Cro\CroDocDefinitionManager;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Appearance;
@@ -23,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('settings/update', SystemUpdate::class)->name('settings.update');
+
+    Route::get('cro-definitions', CroDocDefinitionManager::class)->name('cro-definitions');
 });
 
 require __DIR__ . '/auth.php';

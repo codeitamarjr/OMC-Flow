@@ -65,7 +65,10 @@
 
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('business.index')" icon="users" wire:navigate>{{ __('Business') }}</flux:menu.item>
-                        <flux:menu.item :href="route('company.manage')" icon="briefcase" wire:navigate>{{ __('Companies') }}</flux:menu.item>
+                        @if(auth()->user()->currentBusiness)
+                            <flux:menu.item :href="route('company.manage')" icon="briefcase" wire:navigate>{{ __('Companies') }}</flux:menu.item>
+                            <flux:menu.item :href="route('cro-definitions')" icon="document-duplicate" wire:navigate>{{ __('CRO Definitions') }}</flux:menu.item>
+                        @endif
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />

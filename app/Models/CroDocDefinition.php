@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Business;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CroDocDefinition extends Model
 {
@@ -20,6 +23,48 @@ class CroDocDefinition extends Model
     ];
 
     /**
+     * The business that owns this definition (nullable for globals).
+     */
+    public function business(): BelongsTo
+    {
+        return $this->belongsTo(Business::class);
+    }
+
+    /**
+     * Get the companies associated with the CRO document definition.
+     *
+     * This relationship is defined through the pivot table 'company_cro_document',
+     * and includes additional pivot data: 'completed' status and 'completed_at' timestamp.
+     * The timestamps for the pivot table are also maintained.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(
+            Company::class,
+            'company_cro_document',
+            'cro_doc_definition_id',
+            'company_id'
+        )
+            ->withPivot(['completed', 'completed_at', 'completed_by'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Only return definitions this business can see:
+     *  – its own (business_id = $businessId)
+     *  – or global ones (is_global = true)
+     */
+    public function scopeAccessible(Builder $query, int $businessId): Builder
+    {
+        return $query->where(function ($q) use ($businessId) {
+            $q->where('business_id', $businessId)
+                ->orWhere('is_global', true);
+        });
+    }
+
+    /**
      * Eloquent event hook for when a CroDocDefinition is created or deleted.
      *
      * When a CroDocDefinition is created, we need to attach it to all existing companies
@@ -32,28 +77,22 @@ class CroDocDefinition extends Model
     protected static function booted()
     {
         static::created(function (CroDocDefinition $def) {
-            if ($def->is_global) {
-                \App\Models\Company::chunk(100, function ($companies) use ($def) {
-                    $companies->each(
-                        fn($company) =>
-                        $company->croDocDefinitions()
-                            ->syncWithoutDetaching([$def->id => ['completed' => false]])
-                    );
-                });
-            } else {
-                // Optionally, for non-global ...
+            if ($def->business) {
+                $def->business->companies()
+                    ->chunk(100, function ($companies) use ($def) {
+                        $companies->each(
+                            fn(Company $company) =>
+                            $company->croDocDefinitions()
+                                ->syncWithoutDetaching([
+                                    $def->id => ['completed' => false],
+                                ])
+                        );
+                    });
             }
         });
 
         static::deleting(function (CroDocDefinition $def) {
             $def->companies()->detach();
         });
-    }
-
-    public function companies()
-    {
-        return $this->belongsToMany(Company::class, 'company_cro_document')
-            ->withPivot(['completed', 'completed_at'])
-            ->withTimestamps();
     }
 }

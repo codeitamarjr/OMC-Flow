@@ -257,10 +257,10 @@
                                                     d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" />
                                             </svg>
                                             <span class="sr-only">CRO Definitions</span>
-                                            @if (!$company->croDocDefinitions->filter(fn($d) => $d->pivot->completed)->count() > 0)
+                                            @if ($company->cro_incomplete_count > 0)
                                                 <div
                                                     class="absolute inline-flex items-center justify-center size-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-0.5 -end-0.5 dark:border-gray-900">
-                                                    {{ !$company->croDocDefinitions->filter(fn($d) => $d->pivot->completed)->count() }}
+                                                    {{ $company->cro_incomplete_count }}
                                                 </div>
                                             @endif
                                         </div>
