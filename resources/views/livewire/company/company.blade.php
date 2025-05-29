@@ -222,7 +222,7 @@
                                 <td class="px-6 py-1.5">
                                     <div class="flex items-center">
                                         <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $company->next_annual_return }}
+                                            {{ \Carbon\Carbon::parse($company->next_annual_return)->format('d/m/Y') }}
                                         </span>
                                     </div>
                                 </td>
@@ -237,11 +237,12 @@
                                                     x-show="input" @click.away="input = false" />
                                                 <div class="text-xs text-gray-500 mt-1" @click="input = !input"
                                                     x-show="!input">
-                                                    {{ $company->last_agm ?? 'Not set' }}</div>
+                                                    {{ \Carbon\Carbon::parse($company->last_agm)->format('d/m/Y') ?? 'Not set' }}
+                                                </div>
                                             </span>
                                         @else
                                             <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $company->last_agm ?? 'Not set' }}
+                                                {{ \Carbon\Carbon::parse($company->last_agm)->format('d/m/Y') ?? 'Not set' }}
                                             </span>
                                         @endif
                                     </div>
@@ -258,11 +259,12 @@
                                                     x-show="input" @click.away="input = false" />
                                                 <div class="text-xs text-gray-500 mt-1" @click="input = !input"
                                                     x-show="!input">
-                                                    {{ $company->financial_year_end ?? 'Not set' }}</div>
+                                                    {{ \Carbon\Carbon::parse($company->financial_year_end)->format('d/m') ?? 'Not set' }}
+                                                </div>
                                             </span>
                                         @else
                                             <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $company->financial_year_end ?? 'Not set' }}
+                                                {{ \Carbon\Carbon::parse($company->financial_year_end)->format('d/m') ?? 'Not set' }}
                                             </span>
                                         @endif
                                     </div>
