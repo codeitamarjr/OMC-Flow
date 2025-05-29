@@ -200,9 +200,9 @@
                                             {{ $company->custom ?? $company->name }}
                                         </p>
                                         <span class="text-xm text-gray-500 dark:text-gray-400">
-                                            {{ $company->address_line_1 ?? '' }}
+                                            Address: {{ $company->address_line_1 ?? '' }}
                                         </span>
-                                        <span class="text-xm text-gray-500 dark:text-gray-400">
+                                        <span class="text-xm text-gray-500 dark:text-gray-400 truncate">
                                             {{ $company->name ?? ($company->custom ?? '') }}
                                         </span>
                                         @if ($company->tags->isNotEmpty())
