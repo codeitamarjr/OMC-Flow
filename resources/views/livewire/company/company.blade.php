@@ -125,8 +125,19 @@
                             <th scope="col" class="px-6 py-2">
                                 Reg #
                             </th>
-                            <th scope="col" class="px-6 py-2">
-                                Company
+                            <th scope="col" class="px-6 py-2" wire:click="sort('custom')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'custom')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform  ease-in-out
+                                @if ($sortDirection === 'asc' && $sortBy === 'custom') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Company Name
+                                </div>
                             </th>
                             <th scope="col" class="px-6 py-2" wire:click="sort('next_annual_return')">
                                 <div class="flex items-center">
@@ -140,6 +151,34 @@
                                         </svg>
                                     @endif
                                     Next AR Due
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-2" wire:click="sort('last_agm')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'last_agm')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform  ease-in-out
+                                @if ($sortDirection === 'asc' && $sortBy === 'last_agm') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Last AGM
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-2" wire:click="sort('financial_year_end')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'financial_year_end')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform  ease-in-out
+                                @if ($sortDirection === 'asc' && $sortBy === 'financial_year_end') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Financial Year End
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-2">
@@ -158,10 +197,13 @@
                                 <td class="px-6 py-0.5">
                                     <div class="ml-3">
                                         <p class="text-base font-semibold text-gray-900 dark:text-gray-300">
-                                            {{ $company->name }}
+                                            {{ $company->custom ?? $company->name }}
                                         </p>
-                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                            {{ $company->custom }}
+                                        <span class="text-xm text-gray-500 dark:text-gray-400">
+                                            {{ $company->address_line_1 ?? '' }}
+                                        </span>
+                                        <span class="text-xm text-gray-500 dark:text-gray-400">
+                                            {{ $company->name ?? ($company->custom ?? '') }}
                                         </span>
                                         @if ($company->tags->isNotEmpty())
                                             @foreach ($company->tags as $tag)
@@ -182,6 +224,47 @@
                                         <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
                                             {{ $company->next_annual_return }}
                                         </span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-1.5">
+                                    <div class="flex items-center">
+                                        @if (auth()->user()->roleInCurrentBusiness() === 'admin')
+                                            <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                x-data="{ input: false }">
+                                                <input type="date" wire:model.defer="lastAGMs.{{ $company->id }}"
+                                                    wire:change="saveLastAGM({{ $company->id }})"
+                                                    class="text-sm rounded border border-gray-300 px-2 py-1 dark:bg-gray-700 dark:text-white"
+                                                    x-show="input" @click.away="input = false" />
+                                                <div class="text-xs text-gray-500 mt-1" @click="input = !input"
+                                                    x-show="!input">
+                                                    {{ $company->last_agm ?? 'Not set' }}</div>
+                                            </span>
+                                        @else
+                                            <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                {{ $company->last_agm ?? 'Not set' }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-1.5">
+                                    <div class="flex items-center">
+                                        @if (auth()->user()->roleInCurrentBusiness() === 'admin')
+                                            <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                x-data="{ input: false }">
+                                                <input type="date"
+                                                    wire:model.defer="financialYearEnds.{{ $company->id }}"
+                                                    wire:change="saveFinancialYearEnd({{ $company->id }})"
+                                                    class="text-sm rounded border border-gray-300 px-2 py-1 dark:bg-gray-700 dark:text-white"
+                                                    x-show="input" @click.away="input = false" />
+                                                <div class="text-xs text-gray-500 mt-1" @click="input = !input"
+                                                    x-show="!input">
+                                                    {{ $company->financial_year_end ?? 'Not set' }}</div>
+                                            </span>
+                                        @else
+                                            <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                {{ $company->financial_year_end ?? 'Not set' }}
+                                            </span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-1.5" x-data="{ tooltip: false }">

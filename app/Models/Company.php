@@ -25,6 +25,8 @@ class Company extends Model
         'next_annual_return',
         'next_financial_statement_due',
         'last_accounts',
+        'last_agm',
+        'financial_year_end',
         'postcode',
         'address_line_1',
         'address_line_2',

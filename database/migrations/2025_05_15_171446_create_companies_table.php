@@ -29,6 +29,8 @@ return new class extends Migration
             $table->date('next_annual_return')->nullable();
             $table->date('next_financial_statement_due')->nullable();
             $table->date('last_accounts')->nullable();
+            $table->date('last_agm')->nullable();
+            $table->date('financial_year_end')->nullable();
 
             $table->string('postcode')->nullable();
             $table->string('address_line_1')->nullable();
@@ -39,6 +41,13 @@ return new class extends Migration
             $table->string('place_of_business')->nullable();
             $table->integer('company_type_code')->nullable();
             $table->integer('company_status_code')->nullable();
+
+            $table->index(['business_id', 'name']);
+            $table->index(['business_id', 'custom']);
+            $table->index(['business_id', 'company_number']);
+            $table->index(['business_id', 'next_annual_return']);
+            $table->index(['business_id', 'last_agm']);
+            $table->index(['business_id', 'financial_year_end']);
         });
     }
 

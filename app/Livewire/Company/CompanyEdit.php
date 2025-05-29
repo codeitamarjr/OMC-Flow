@@ -21,6 +21,8 @@ class CompanyEdit extends Component
     public ?string $next_annual_return = null;
     public ?string $next_financial_statement_due = null;
     public ?string $last_accounts = null;
+    public ?string $last_agm = null;
+    public ?string $financial_year_end = null;
     public ?string $postcode = null;
     public ?string $address_line_1 = null;
     public ?string $address_line_2 = null;
@@ -44,6 +46,8 @@ class CompanyEdit extends Component
             'next_annual_return' => 'nullable|date',
             'next_financial_statement_due' => 'nullable|date',
             'last_accounts' => 'nullable|date',
+            'last_agm' => 'nullable|date',
+            'financial_year_end' => 'nullable|date',
             'postcode' => 'nullable|string|max:1000',
             'address_line_1' => 'nullable|string|max:1000',
             'address_line_2' => 'nullable|string|max:1000',
@@ -74,6 +78,8 @@ class CompanyEdit extends Component
             'next_annual_return',
             'next_financial_statement_due',
             'last_accounts',
+            'last_agm',
+            'financial_year_end',
             'postcode',
             'address_line_1',
             'address_line_2',
@@ -101,6 +107,8 @@ class CompanyEdit extends Component
             'next_annual_return' => $this->next_annual_return,
             'next_financial_statement_due' => $this->next_financial_statement_due,
             'last_accounts' => $this->last_accounts,
+            'last_agm' => $this->last_agm,
+            'financial_year_end' => $this->financial_year_end,
             'postcode' => $this->postcode,
             'address_line_1' => $this->address_line_1,
             'address_line_2' => $this->address_line_2,

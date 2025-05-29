@@ -24,8 +24,22 @@ class Company extends Component
     public bool $showDetailsModal = false;
     public ?array $croDefinitions = null;
     public bool $showCroDefinitionsModal = false;
+    public array $financialYearEnds = [];
+    public array $lastAGMs = [];
 
 
+    /**
+     * Perform initialisation when the component is mounted.
+     *
+     * 1. Check if the current business ID has changed since the last request.
+     *    If it has, forget the selected tag filters and store the new current business ID.
+     * 2. Retrieve all tags associated with the current business.
+     * 3. Retrieve the selected tag filters from the session.
+     * 4. Set the financial year end and last AGM dates for each company associated
+     *    with the current business.
+     *
+     * @return void
+     */
     public function mount()
     {
         $currentBusinessId = Auth::user()->current_business_id;
@@ -39,6 +53,11 @@ class Company extends Component
             ->get(['id', 'name']);
 
         $this->selectedTagFilters = session()->get('selected_tag_filters', []);
+
+        foreach (Auth::user()->currentBusiness->companies as $company) {
+            $this->financialYearEnds[$company->id] = $company->financial_year_end;
+            $this->lastAGMs[$company->id] = $company->last_agm;
+        }
     }
 
     /**
@@ -98,6 +117,57 @@ class Company extends Component
         session()->put('selected_tag_filters', $this->selectedTagFilters);
     }
 
+    /**
+     * Saves the financial year end for the given company ID.
+     *
+     * @param int $companyId The ID of the company to save the financial year end for.
+     *
+     * @return void
+     */
+    public function saveFinancialYearEnd($companyId)
+    {
+        $date = $this->financialYearEnds[$companyId] ?? null;
+
+        if ($date) {
+            $company = \App\Models\Company::findOrFail($companyId);
+
+            abort_unless(
+                Auth::user()->businesses()->where('business_id', $company->business_id)->exists(),
+                403,
+                'Unauthorized'
+            );
+
+            $company->update(['financial_year_end' => $date]);
+
+            session()->flash('success', 'Financial year end saved.');
+        }
+    }
+
+    /**
+     * Update the last AGM date for the given company ID.
+     *
+     * @param int $companyId The ID of the company to update.
+     *
+     * @return void
+     */
+    public function saveLastAGM($companyId)
+    {
+        $date = $this->lastAGMs[$companyId] ?? null;
+
+        if ($date) {
+            $company = \App\Models\Company::findOrFail($companyId);
+
+            abort_unless(
+                Auth::user()->businesses()->where('business_id', $company->business_id)->exists(),
+                403,
+                'Unauthorized'
+            );
+
+            $company->update(['last_agm' => $date]);
+
+            session()->flash('success', 'Last AGM saved.');
+        }
+    }
     /**
      * Loads and displays the submission documents for the specified company.
      *

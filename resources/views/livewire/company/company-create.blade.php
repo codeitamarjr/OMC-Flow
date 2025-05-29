@@ -30,6 +30,8 @@
             <flux:input wire:model="next_annual_return" :label="__('Next Annual Return')" type="date" />
             <flux:input wire:model="next_financial_statement_due" :label="__('Next Accounts')" type="date" />
             <flux:input wire:model="last_accounts" :label="__('Last Accounts')" type="date" />
+            <flux:input wire:model="last_agm" :label="__('Last AGM')" type="date" />
+            <flux:input wire:model="financial_year_end" :label="__('Last Financial Year End')" type="date" />
             <flux:input wire:model="postcode" :label="__('Postcode')" />
             <flux:input wire:model="address_line_1" :label="__('Address Line 1')" />
             <flux:input wire:model="address_line_2" :label="__('Address Line 2')" />

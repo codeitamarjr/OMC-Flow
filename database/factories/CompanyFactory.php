@@ -29,6 +29,8 @@ class CompanyFactory extends Factory
             'next_annual_return' => now()->addYear(),
             'next_financial_statement_due' => now()->addMonths(rand(1, 12)),
             'last_accounts' => now()->subYear(),
+            'last_agm' => now()->subMonths(rand(1, 12)),
+            'financial_year_end' => now()->subMonths(rand(1, 12)),
             'postcode' => $this->faker->postcode,
             'address_line_1' => $this->faker->streetAddress,
             'address_line_2' => $this->faker->secondaryAddress,

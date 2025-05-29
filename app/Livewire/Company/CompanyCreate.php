@@ -20,6 +20,8 @@ class CompanyCreate extends Component
     public ?string $next_annual_return = null;
     public ?string $next_financial_statement_due = null;
     public ?string $last_accounts = null;
+    public ?string $last_agm = null;
+    public ?string $financial_year_end = null;
     public ?string $postcode = null;
     public ?string $address_line_1 = null;
     public ?string $address_line_2 = null;
@@ -41,6 +43,8 @@ class CompanyCreate extends Component
         'next_annual_return' => 'nullable|date',
         'next_financial_statement_due' => 'nullable|date',
         'last_accounts' => 'nullable|date',
+        'last_agm' => 'nullable|date',
+        'financial_year_end' => 'nullable|date',
         'postcode' => 'nullable|string|max:1000',
         'address_line_1' => 'nullable|string|max:1000',
         'address_line_2' => 'nullable|string|max:1000',
@@ -89,7 +93,10 @@ class CompanyCreate extends Component
             $this->registration_date = $this->formatDate($details['company_reg_date'] ?? null);
             $this->last_annual_return = $this->formatDate($details['last_ar_date'] ?? null);
             $this->next_annual_return = $this->formatDate($details['next_ar_date'] ?? null);
+            $this->next_financial_statement_due = $this->formatDate($details['next_fs_due_date'] ?? null);
             $this->last_accounts = $this->formatDate($details['last_acc_date'] ?? null);
+            $this->last_agm = $this->formatDate($details['last_agm_date'] ?? null);
+            $this->financial_year_end = $this->formatDate($details['financial_year_end'] ?? null);
             $this->postcode = strtoupper($details['eircode'] ?? null);
             $this->address_line_1 = strtoupper($details['company_addr_1'] ?? null);
             $this->address_line_2 = strtoupper($details['company_addr_2'] ?? null);
@@ -122,6 +129,8 @@ class CompanyCreate extends Component
         $this->next_annual_return = null;
         $this->next_financial_statement_due = null;
         $this->last_accounts = null;
+        $this->last_agm = null;
+        $this->financial_year_end = null;
         $this->postcode = null;
         $this->address_line_1 = null;
         $this->address_line_2 = null;
@@ -149,6 +158,8 @@ class CompanyCreate extends Component
             'next_annual_return' => $this->next_annual_return,
             'next_financial_statement_due' => $this->next_financial_statement_due,
             'last_accounts' => $this->last_accounts,
+            'last_agm' => $this->last_agm,
+            'financial_year_end' => $this->financial_year_end,
             'postcode' => $this->postcode,
             'address_line_1' => $this->address_line_1,
             'address_line_2' => $this->address_line_2,
@@ -172,6 +183,8 @@ class CompanyCreate extends Component
             'next_annual_return',
             'next_financial_statement_due',
             'last_accounts',
+            'last_agm',
+            'financial_year_end',
             'postcode',
             'address_line_1',
             'address_line_2',
