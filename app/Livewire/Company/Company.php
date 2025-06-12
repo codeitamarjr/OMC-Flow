@@ -9,6 +9,7 @@ use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\CompanyFetchCroSubmissions;
 use App\Models\Company as ModelsCompany;
+use Illuminate\Database\Eloquent\Model;
 
 class Company extends Component
 {
@@ -26,6 +27,9 @@ class Company extends Component
     public bool $showCroDefinitionsModal = false;
     public array $financialYearEnds = [];
     public array $lastAGMs = [];
+
+    public $companyDetailsModal = false;
+    public ?ModelsCompany $viewingCompany = null;
 
 
     /**
@@ -231,6 +235,19 @@ class Company extends Component
 
         $this->selectedCompany->load('croDocDefinitions');
     }
+
+    public function viewCompanyDetails(ModelsCompany $company)
+    {
+        abort_unless(
+            Auth::user()->businesses()->where('business_id', $company->business_id)->exists(),
+            403,
+            'You do not have permission to view this company'
+        );
+
+        $this->viewingCompany = $company;
+        $this->companyDetailsModal = true;
+    }
+
 
     public function render()
     {

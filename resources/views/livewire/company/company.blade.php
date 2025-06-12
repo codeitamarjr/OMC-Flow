@@ -316,7 +316,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-1.5 flex items-center">
-                                    <div wire:click="showCompanySubmissions({{ $company->id }})">
+                                    {{-- <div wire:click="showCompanySubmissions({{ $company->id }})">
                                         <div
                                             class="relative inline-flex items-center p-3 text-sm font-medium text-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -331,7 +331,7 @@
                                                 {{ $company->submissionDocuments->count() }}
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     @if ($company->croDocDefinitions->count() > 0)
                                         <div class="relative inline-flex items-center p-3 text-sm font-medium text-center"
                                             wire:click="showCroDefinition({{ $company->id }})">
@@ -374,8 +374,14 @@
                                                             </li>
                                                         </ul> --}}
                                             <div class="py-1">
-                                                <a href="#"
-                                                    class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-not-allowed">Delete</a>
+                                                <div wire:click="viewCompanyDetails({{ $company->id }})"
+                                                    class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
+                                                    View</div>
+                                            </div>
+                                            <div class="py-1">
+                                                <div
+                                                    class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-not-allowed">
+                                                    Delete</div>
                                             </div>
                                         </div>
                                     </div>
@@ -384,7 +390,7 @@
                         @endforeach
                     </tbody>
                 </table>
-                @if ($selectedCompany)
+                {{-- @if ($selectedCompany)
                     <x-ui.modal wire:model="showDetailsModal" maxWidth="7xl">
                         <div class="mb-4">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
@@ -429,7 +435,7 @@
                             </flux:button>
                         </div>
                     </x-ui.modal>
-                @endif
+                @endif --}}
                 @if ($showCroDefinitionsModal)
                     <x-ui.modal wire:model="showCroDefinitionsModal" maxWidth="7xl">
                         <div class="mb-4">
@@ -491,6 +497,11 @@
                                 Close
                             </flux:button>
                         </div>
+                    </x-ui.modal>
+                @endif
+                @if ($viewingCompany)
+                    <x-ui.modal wire:model="companyDetailsModal" maxWidth="7xl">
+                        <x-company.company-details :company="$viewingCompany" />
                     </x-ui.modal>
                 @endif
             </div>
