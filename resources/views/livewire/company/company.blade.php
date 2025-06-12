@@ -80,6 +80,15 @@
                                         clip-rule="evenodd" />
                                 </svg>
                                 Filter
+                                @php
+                                    $selectedNames = collect($allTags)
+                                        ->whereIn('id', $selectedTagFilters)
+                                        ->pluck('name')
+                                        ->toArray();
+                                @endphp
+                                @if (count($selectedNames))
+                                    ({{ implode(', ', $selectedNames) }})
+                                @endif
                                 <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <path clip-rule="evenodd" fill-rule="evenodd"
