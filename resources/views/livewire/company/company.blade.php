@@ -136,7 +136,21 @@
                                                 d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                         </svg>
                                     @endif
-                                    Company Name
+                                    Custom Name
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-2" wire:click="sort('name')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'name')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform  ease-in-out
+                                @if ($sortDirection === 'asc' && $sortBy === 'name') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Company Entity
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-2" wire:click="sort('next_annual_return')">
@@ -194,16 +208,20 @@
                                     class="px-6 py-1.5 font-medium text-gray-900 whitespace-nowrap dark:text-gray-300">
                                     {{ $company->company_number }}
                                 </th>
-                                <td class="px-6 py-0.5">
-                                    <div class="ml-3">
+                                <td class="px-6 py-1.5">
+                                    <div class="flex items-center">
                                         <p class="text-base font-semibold text-gray-900 dark:text-gray-300">
                                             {{ $company->custom ?? $company->name }}
                                         </p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-0.5">
+                                    <div class="ml-3">
+                                        <p class="text-base font-semibold text-gray-900 dark:text-gray-300">
+                                            {{ $company->name }}
+                                        </p>
                                         <span class="text-xm text-gray-500 dark:text-gray-400">
-                                            Address: {{ $company->address_line_1 ?? '' }}
-                                        </span>
-                                        <span class="text-xm text-gray-500 dark:text-gray-400 truncate">
-                                            {{ $company->name ?? ($company->custom ?? '') }}
+                                            Address: {{ $company->address_line_1 . ', ' . $company->address_line_2 ?? '' }}
                                         </span>
                                         @if ($company->tags->isNotEmpty())
                                             @foreach ($company->tags as $tag)

@@ -81,7 +81,11 @@ class Company extends Component
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('custom', 'like', '%' . $this->search . '%')
-                        ->orWhere('company_number', 'like', '%' . $this->search . '%');
+                        ->orWhere('company_number', 'like', '%' . $this->search . '%')
+                        ->orWhere('address_line_1', 'like', '%' . $this->search . '%')
+                        ->orWhere('address_line_2', 'like', '%' . $this->search . '%')
+                        ->orWhere('address_line_3', 'like', '%' . $this->search . '%')
+                        ->orWhere('address_line_4', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->selectedTagFilters, function ($query) {
