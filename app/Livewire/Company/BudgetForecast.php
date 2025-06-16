@@ -19,11 +19,16 @@ class BudgetForecast extends Component
             ->orderBy('name')
             ->get();
 
-        $this->selectedCompanyId = null;
+        $this->selectedCompanyId = session('selectedCompanyId');
+
+        if ($this->selectedCompanyId) {
+            $this->loadContracts();
+        }
     }
 
     public function updatedSelectedCompanyId($value)
     {
+        session(['selectedCompanyId' => $value]);
         $this->loadContracts();
     }
 
