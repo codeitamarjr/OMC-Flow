@@ -192,6 +192,74 @@
                     </div>
                 @endif
 
+                @if ($viewMode === 'monthly')
+                    @php
+                        $currentMonthStart = $currentDate->copy()->startOfMonth()->toDateString();
+                        $currentMonthEnd = $currentDate->copy()->endOfMonth()->toDateString();
+
+                        $monthlyDueItems = collect($dueDatesByDay)
+                            ->filter(fn($items, $date) => $date >= $currentMonthStart && $date <= $currentMonthEnd)
+                            ->flatMap(fn($items) => $items)
+                            ->sortBy('next_due_date');
+                    @endphp
+                    <section class="mt-12 md:mt-0 md:pl-14 w-full">
+                        <h2 class="text-base font-semibold text-gray-900">Monthly Budget for
+                            {{ $currentDate->format('F Y') }}</h2>
+                        <ol class="mt-4 flex flex-col gap-y-1 text-sm/6 text-gray-500">
+                            @forelse ($monthlyDueItems as $dueItem)
+                                <li
+                                    class="group flex items-center rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100">
+                                    <div class="flex-auto">
+                                        <p class="text-gray-900">{{ $dueItem->category->name ?? '-' }}</p>
+                                        <p class="mt-0.5">{{ $dueItem->provider->name ?? '-' }}</p>
+                                        <p class="mt-0.5">
+                                            {{ \Carbon\Carbon::parse($dueItem->next_due_date)->format('j M, Y') }}</p>
+                                        <p class="mt-0.5 font-semibold text-indigo-700">
+                                            {{ Number::currency($dueItem->budget, 'EUR') }}</p>
+                                    </div>
+                                    <div class="relative opacity-0 focus-within:opacity-100 group-hover:opacity-100"
+                                        x-data="{ open: false }" @click.away="open = false">
+                                        <div>
+                                            <button type="button" x-on:click="open = !open"
+                                                class="-m-2 flex items-center rounded-full p-1.5 text-gray-500 hover:text-gray-600"
+                                                id="menu-0-button" aria-expanded="false" aria-haspopup="true">
+                                                <span class="sr-only">Open options</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                                    class="size-6 text-gray-400">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="transform opacity-0 scale-95"
+                                            x-transition:enter-end="transform opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-75"
+                                            x-transition:leave-start="transform opacity-100 scale-100"
+                                            x-transition:leave-end="transform opacity-0 scale-95"
+                                            class="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                                            role="menu" aria-orientation="vertical"
+                                            aria-labelledby="menu-0-button" tabindex="-1">
+                                            <div class="py-1" role="none">
+                                                <a href="#"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    role="menuitem" tabindex="-1" id="menu-0-item-0">Edit</a>
+                                                <a href="#"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    role="menuitem" tabindex="-1" id="menu-0-item-1">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="text-gray-500 italic">No budget items this month.</li>
+                            @endforelse
+                        </ol>
+                    </section>
+                @endif
+
 
             </div>
         </div>
