@@ -34,8 +34,15 @@ class ContractManager extends Component
     {
         $this->companies = Company::where('business_id', Auth::user()->current_business_id)->orderBy('name')->get();
         $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get();
-        $this->providers = ServiceProvider::where('business_id', Auth::user()->current_business_id)->get();
+        $this->providers = collect();
         $this->loadContracts();
+    }
+
+    public function updatedServiceCategoryId($categoryId)
+    {
+        $category = ServiceCategory::with('providers')->find($categoryId);
+        $this->providers = $category?->providers ?? collect();
+        $this->service_provider_id = null;
     }
 
     public function loadContracts()

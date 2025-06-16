@@ -44,7 +44,7 @@
                             @endforeach
                         </flux:select>
 
-                        <flux:select wire:model.defer="service_category_id" :label="__('Service Category')">
+                        <flux:select wire:model.live="service_category_id" :label="__('Service Category')">
                             <option value="">{{ __('Select Category') }}</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>

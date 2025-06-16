@@ -37,6 +37,7 @@ class ProviderManager extends Component
     public string $editWebsite = '';
     public string $editAddress = '';
     public string $editNotes = '';
+    public $category_ids = [];
 
     public function mount()
     {
@@ -115,6 +116,7 @@ class ProviderManager extends Component
         $this->editWebsite = $this->editingProvider->website;
         $this->editAddress = $this->editingProvider->address;
         $this->editNotes = $this->editingProvider->notes;
+        $this->category_ids = $this->editingProvider->categories->pluck('id')->toArray();
         $this->showEditModal = true;
     }
 
@@ -139,6 +141,7 @@ class ProviderManager extends Component
             'address' => $this->editAddress,
             'notes' => $this->editNotes,
         ]);
+        $this->editingProvider->categories()->sync($this->category_ids);
 
         $this->reset([
             'editingProvider',
@@ -149,6 +152,7 @@ class ProviderManager extends Component
             'editWebsite',
             'editAddress',
             'editNotes',
+            'category_ids',
             'showEditModal',
         ]);
 

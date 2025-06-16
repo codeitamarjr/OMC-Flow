@@ -26,8 +26,8 @@ class ServiceProvider extends Model
         return $this->belongsTo(Business::class);
     }
 
-    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasMany(ServiceCategory::class);
+        return $this->belongsToMany(ServiceCategory::class)->withTimestamps();
     }
 }
