@@ -13,4 +13,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/company/create', CompanyCreate::class)->name('company.create');
     Route::get('/company/{company}/edit', CompanyEdit::class)->name('company.edit');
     Route::get('/company/import', CompanyImport::class)->name('company.import');
+
+    Route::get('/company/service/category/manager/', \App\Livewire\Company\Service\CategoryManager::class)->name('company.service.category.manager');
+    Route::get('/company/service/provider/manager/', \App\Livewire\Company\Service\Provider\ProviderManager::class)->name('company.service.provider.manager');
+    Route::get('/company/service/contract/manager/', \App\Livewire\Company\Service\ContractManager::class)->name('company.service.contract.manager');
 });
