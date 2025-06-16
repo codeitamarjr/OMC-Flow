@@ -25,6 +25,15 @@
                             <div class="text-xs">{{ ucfirst($contract->status) }}</div>
                         </div>
                     </div>
+                    <div class="flex gap-2 mt-2 text-right">
+                        <flux:button size="sm" variant="outline" wire:click="edit({{ $contract->id }})">
+                            {{ __('Edit') }}
+                        </flux:button>
+                        <flux:button size="sm" variant="outline" class="!text-red-600 hover:!bg-red-100"
+                            wire:click="confirmDelete({{ $contract->id }})">
+                            {{ __('Delete') }}
+                        </flux:button>
+                    </div>
                 </div>
             @empty
                 <p class="text-sm text-gray-500">{{ __('No contracts created yet.') }}</p>
@@ -36,38 +45,7 @@
             <x-ui.modal wire:model="showCreateModal">
                 <div class="mt-3 text-center sm:mt-5">
                     <h3 class="text-base font-semibold text-gray-900">{{ __('Create Service Contract') }}</h3>
-                    <div class="mt-4 space-y-4 text-left">
-                        <flux:select wire:model.defer="company_id" :label="__('Company')">
-                            <option value="">{{ __('Select Company') }}</option>
-                            @foreach ($companies as $company)
-                                <option value="{{ $company->id }}">{{ $company->name }}</option>
-                            @endforeach
-                        </flux:select>
-
-                        <flux:select wire:model.live="service_category_id" :label="__('Service Category')">
-                            <option value="">{{ __('Select Category') }}</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </flux:select>
-
-                        <flux:select wire:model.defer="service_provider_id" :label="__('Service Provider')">
-                            <option value="">{{ __('Select Provider') }}</option>
-                            @foreach ($providers as $provider)
-                                <option value="{{ $provider->id }}">{{ $provider->name }}</option>
-                            @endforeach
-                        </flux:select>
-
-                        <flux:input wire:model.defer="budget" :label="__('Budget (€)')" type="number" step="0.01" />
-                        <flux:input wire:model.defer="start_date" :label="__('Start Date')" type="date" />
-                        <flux:input wire:model.defer="next_due_date" :label="__('Next Due Date')" type="date" />
-                        <flux:select wire:model.defer="status" :label="__('Status')">
-                            <option value="active">{{ __('Active') }}</option>
-                            <option value="inactive">{{ __('Inactive') }}</option>
-                            <option value="terminated">{{ __('Terminated') }}</option>
-                        </flux:select>
-                        <flux:input wire:model.defer="notes" :label="__('Notes')" />
-                    </div>
+                    @include('livewire.company.service.partials.contract-form')
                 </div>
 
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3">
@@ -81,5 +59,53 @@
                 </div>
             </x-ui.modal>
         @endif
+
+        @if ($showEditModal)
+            <x-ui.modal wire:model="showEditModal">
+                <div class="mt-3 text-center sm:mt-5">
+                    <h3 class="text-base font-semibold text-gray-900">{{ __('Edit Service Contract') }}</h3>
+                    @include('livewire.company.service.partials.contract-form')
+                </div>
+                <div class="mt-5 sm:grid sm:grid-cols-2 sm:gap-3">
+                    <flux:button type="button" variant="outline" class="w-full"
+                        wire:click="$set('showEditModal', false)">
+                        {{ __('Cancel') }}
+                    </flux:button>
+                    <flux:button type="button" class="w-full" wire:click="update" wire:keydown.enter="update">
+                        {{ __('Update Contract') }}
+                    </flux:button>
+                </div>
+            </x-ui.modal>
+        @endif
+
+        @if ($showDeleteModal)
+            <x-ui.modal wire:model="showDeleteModal">
+                <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
+                    <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </div>
+                <div class="mt-3 text-center">
+                    <h3 class="text-base font-semibold text-gray-900">
+                        {{ __('Delete Contract') }}
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-2">
+                        {{ __('Are you sure you want to delete this contract? This action cannot be undone.') }}
+                    </p>
+                </div>
+                <div class="mt-5 sm:grid sm:grid-cols-2 sm:gap-3">
+                    <flux:button type="button" variant="outline" class="w-full"
+                        wire:click="$set('showDeleteModal', false)">
+                        {{ __('Cancel') }}
+                    </flux:button>
+                    <flux:button type="button" variant="outline" class="!text-red-600 hover:!bg-red-100"
+                        wire:click="delete">
+                        {{ __('Yes, delete') }}
+                    </flux:button>
+                </div>
+            </x-ui.modal>
+        @endif
+
+
     </x-contract.layout>
 </section>

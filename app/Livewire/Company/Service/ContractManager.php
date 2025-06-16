@@ -30,6 +30,12 @@ class ContractManager extends Component
 
     public bool $showCreateModal = false;
 
+    public bool $showEditModal = false;
+    public bool $showDeleteModal = false;
+
+    public ?CompanyServiceContract $editingContract = null;
+    public ?CompanyServiceContract $deletingContract = null;
+
     public function mount()
     {
         $this->companies = Company::where('business_id', Auth::user()->current_business_id)->orderBy('name')->get();
@@ -86,6 +92,72 @@ class ContractManager extends Component
         $this->loadContracts();
         session()->flash('success', 'Service contract created.');
     }
+
+    public function edit($id)
+    {
+        $this->editingContract = CompanyServiceContract::findOrFail($id);
+
+        $this->company_id = $this->editingContract->company_id;
+        $this->service_category_id = $this->editingContract->service_category_id;
+        $this->updatedServiceCategoryId($this->service_category_id); // Load related providers
+        $this->service_provider_id = $this->editingContract->service_provider_id;
+        $this->budget = $this->editingContract->budget;
+        $this->start_date = $this->editingContract->start_date;
+        $this->next_due_date = $this->editingContract->next_due_date;
+        $this->status = $this->editingContract->status;
+        $this->notes = $this->editingContract->notes;
+
+        $this->showEditModal = true;
+    }
+
+    public function update()
+    {
+        $this->validate([
+            'company_id' => 'required|exists:companies,id',
+            'service_category_id' => 'required|exists:service_categories,id',
+            'service_provider_id' => 'required|exists:service_providers,id',
+            'budget' => 'nullable|numeric',
+            'start_date' => 'nullable|date',
+            'next_due_date' => 'nullable|date',
+            'status' => 'required|in:active,inactive,terminated',
+        ]);
+
+        if (! $this->editingContract) return;
+
+        $this->editingContract->update([
+            'company_id' => $this->company_id,
+            'service_category_id' => $this->service_category_id,
+            'service_provider_id' => $this->service_provider_id,
+            'budget' => $this->budget,
+            'start_date' => $this->start_date,
+            'next_due_date' => $this->next_due_date,
+            'status' => $this->status,
+            'notes' => $this->notes,
+        ]);
+
+        $this->showEditModal = false;
+        $this->editingContract = null;
+        $this->loadContracts();
+        session()->flash('success', 'Contract updated.');
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->deletingContract = CompanyServiceContract::findOrFail($id);
+        $this->showDeleteModal = true;
+    }
+
+    public function delete()
+    {
+        if (! $this->deletingContract) return;
+
+        $this->deletingContract->delete();
+        $this->deletingContract = null;
+        $this->showDeleteModal = false;
+        $this->loadContracts();
+        session()->flash('success', 'Contract deleted.');
+    }
+
     public function render()
     {
         return view('livewire.company.service.contract-manager');
