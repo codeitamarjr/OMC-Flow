@@ -37,6 +37,7 @@ class ProviderManager extends Component
     public string $editWebsite = '';
     public string $editAddress = '';
     public string $editNotes = '';
+    public int $category_id = 0;
     public $category_ids = [];
 
     public function mount()
@@ -68,7 +69,7 @@ class ProviderManager extends Component
             'phone' => 'nullable|string|max:50',
         ]);
 
-        ServiceProvider::create([
+        $provider = ServiceProvider::create([
             'business_id' => Auth::user()->current_business_id,
             'name' => $this->name,
             'contact_name' => $this->contact_name,
@@ -78,6 +79,10 @@ class ProviderManager extends Component
             'address' => $this->address,
             'notes' => $this->notes,
         ]);
+
+        if (!empty($this->category_id)) {
+            $provider->categories()->sync([$this->category_id]);
+        }
 
         $this->reset(['name', 'contact_name', 'email', 'phone', 'website', 'address', 'notes']);
         $this->showCreateModal = false;
