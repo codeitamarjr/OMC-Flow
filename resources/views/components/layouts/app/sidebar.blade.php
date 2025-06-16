@@ -20,6 +20,9 @@
                     <flux:navlist.item icon="table-cells" :href="route('company.budget.forecast')" :current="request()->routeIs('company.budget.forecast')" wire:navigate>
                         {{ __('Budget Forecast') }}
                     </flux:navlist.item>
+                    <flux:navlist.item icon="calendar-days" :href="route('company.budget.calendar')" :current="request()->routeIs('company.budget.calendar')" wire:navigate>
+                        {{ __('Budget Calendar') }}
+                    </flux:navlist.item>
                 @endif
             </flux:navlist>
 
