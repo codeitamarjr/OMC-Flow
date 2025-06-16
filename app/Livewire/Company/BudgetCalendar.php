@@ -17,6 +17,8 @@ class BudgetCalendar extends Component
     public $currentDate;
     public $dueDatesByDay = [];
     public $viewMode = 'month';
+    public $selectedDate = null;
+    public $selectedDueItems = [];
 
 
     public function mount()
@@ -31,6 +33,12 @@ class BudgetCalendar extends Component
             $this->loadMonthlyContracts();
         }
     }
+
+    public function showDueItems($date)
+{
+    $this->selectedDate = $date;
+    $this->selectedDueItems = $this->dueDatesByDay[$date] ?? [];
+}
 
     public function updatedViewMode($value)
     {

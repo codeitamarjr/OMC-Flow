@@ -137,11 +137,11 @@
                                     $isLastCell = $cellIndex === $firstDayOfWeek - 1 + $daysInMonth;
                                 @endphp
 
-                                <button type="button"
+                                <button type="button" wire:click="showDueItems('{{ $formattedDate }}')"
                                     class="bg-white py-1.5 hover:bg-gray-100 focus:z-10 {{ $isFirstCell ? 'rounded-tl-lg' : '' }} {{ $isLastCell ? 'rounded-br-lg' : '' }}">
                                     <time datetime="{{ $formattedDate }}"
                                         title="{{ $hasDue ? implode(', ', collect($dueDatesByDay[$formattedDate])->pluck('category.name')->toArray()) : '' }}"
-                                        class="mx-auto flex size-7 items-center justify-center rounded-full {{ $hasDue ? 'bg-indigo-600 font-semibold text-white' : '' }}">
+                                        class="mx-auto flex size-7 items-center justify-center rounded-full {{ $hasDue ? 'bg-indigo-600 font-semibold text-white cursor-pointer' : '' }}">
                                         {{ $day }}
                                     </time>
                                 </button>
@@ -149,6 +149,49 @@
                         </div>
                     </section>
                 @endforeach
+
+                @if ($selectedDate && count($selectedDueItems))
+                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+                            <button wire:click="$set('selectedDate', null)"
+                                wire:keydown.escape.window="$set('selectedDate', null)"
+                                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+
+                            <h2 class="text-lg font-semibold mb-4">Due on
+                                {{ \Carbon\Carbon::parse($selectedDate)->format('jS F, Y') }}</h2>
+
+                            <table class="min-w-full text-sm text-left border">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 border-b">Category</th>
+                                        <th class="px-4 py-2 border-b">Provider</th>
+                                        <th class="px-4 py-2 border-b">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($selectedDueItems as $item)
+                                        <tr>
+                                            <td class="px-4 py-2 border-b">{{ $item->category->name ?? '-' }}</td>
+                                            <td class="px-4 py-2 border-b">{{ $item->provider->name ?? '-' }}</td>
+                                            <td class="px-4 py-2 border-b">
+                                                {{ Number::currency($item->budget, 'EUR') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
 
             </div>
         </div>
