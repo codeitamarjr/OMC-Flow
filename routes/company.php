@@ -17,4 +17,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/company/service/category/manager/', \App\Livewire\Company\Service\CategoryManager::class)->name('company.service.category.manager');
     Route::get('/company/service/provider/manager/', \App\Livewire\Company\Service\Provider\ProviderManager::class)->name('company.service.provider.manager');
     Route::get('/company/service/contract/manager/', \App\Livewire\Company\Service\ContractManager::class)->name('company.service.contract.manager');
+
+    Route::get('/company/budget/forecast', \App\Livewire\Company\BudgetForecast::class)->name('company.budget.forecast');
 });

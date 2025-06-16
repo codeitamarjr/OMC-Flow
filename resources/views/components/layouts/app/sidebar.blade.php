@@ -17,6 +17,9 @@
                 </flux:navlist.group>
                 @if(auth()->user()?->hasCompaniesInCurrentBusiness())
                     <flux:navlist.item icon="briefcase" :href="route('company.index')" :current="request()->routeIs('company.index')" wire:navigate>{{ __('Companies') }}</flux:navlist.item>
+                    <flux:navlist.item icon="table-cells" :href="route('company.budget.forecast')" :current="request()->routeIs('company.budget.forecast')" wire:navigate>
+                        {{ __('Budget Forecast') }}
+                    </flux:navlist.item>
                 @endif
             </flux:navlist>
 
