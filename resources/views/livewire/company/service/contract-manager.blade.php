@@ -12,7 +12,7 @@
 
         <div class="space-y-3">
             @forelse ($contracts as $contract)
-                <div class="border p-4 rounded-xl bg-white dark:bg-gray-800">
+                <div class="border p-4 rounded-xl bg-white dark:bg-gray-800" id="contract-{{ $contract->id }}">
                     <div class="flex justify-between items-start">
                         <div>
                             <div class="text-sm text-gray-500">{{ $contract->company->name }}</div>
