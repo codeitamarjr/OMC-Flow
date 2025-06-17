@@ -12,7 +12,8 @@
 
         <div class="space-y-3">
             @forelse ($contracts as $contract)
-                <div class="border p-4 rounded-xl bg-white dark:bg-gray-800" id="contract-{{ $contract->id }}">
+                <div x-data x-init="if (window.location.hash === '#contract-{{ $contract->id }}') $el.classList.add('alerts-border')" class="border p-4 rounded-xl bg-white dark:bg-gray-800"
+                    id="contract-{{ $contract->id }}">
                     <div class="flex justify-between items-start">
                         <div>
                             <div class="text-sm text-gray-500">{{ $contract->company->name }}</div>
@@ -60,6 +61,7 @@
             </x-ui.modal>
         @endif
 
+        {{-- EDIT MODAL --}}
         @if ($showEditModal)
             <x-ui.modal wire:model="showEditModal">
                 <div class="mt-3 text-center sm:mt-5">
@@ -78,6 +80,7 @@
             </x-ui.modal>
         @endif
 
+        {{-- DELETE MODAL --}}
         @if ($showDeleteModal)
             <x-ui.modal wire:model="showDeleteModal">
                 <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
@@ -106,6 +109,23 @@
             </x-ui.modal>
         @endif
 
-
     </x-contract.layout>
+    <style>
+        .alerts-border {
+            border: 4px #1c2ecb solid;
+
+            animation: blink 0.8s ease-in-out;
+            animation-iteration-count: 5;
+            animation-fill-mode: forwards;
+
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(28, 46, 203, 0.5);
+        }
+
+        @keyframes blink {
+            50% {
+                border-color: #fff;
+            }
+        }
+    </style>
 </section>

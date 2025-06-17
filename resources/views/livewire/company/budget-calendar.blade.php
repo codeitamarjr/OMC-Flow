@@ -41,7 +41,7 @@
                     <div class="max-w-sm mx-auto">
                         <label for="company" class="sr-only">Select an option</label>
                         <select id="company" wire:model.live="selectedCompanyId"
-                            class="font-semibold text-gray-900  text-sm rounded-lg block w-full p-2.5 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            class="font-semibold text-gray-900  text-sm rounded-lg block w-full p-2.5 px-3 gap-x-1.5 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                             <option selected>Choose a company</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->id }}">{{ $company->name }}</option>
