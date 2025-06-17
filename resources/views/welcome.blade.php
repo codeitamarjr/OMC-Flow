@@ -129,6 +129,16 @@
                                                 </li>
                                                 <li class="flex items-start">
                                                     <div class="flex-shrink-0">
+                                                        <span class="h-10 w-10 rounded-full bg-gray-200"></span>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <p class="text-sm font-medium text-gray-200">
+                                                            Generate Budgets and Overview Deadlines ( B1, Insurance, etc.)
+                                                        </p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <div class="flex-shrink-0">
                                                         <span class="h-10 w-10 rounded-full bg-gray-800/40"></span>
                                                     </div>
                                                     <div class="ml-4">
