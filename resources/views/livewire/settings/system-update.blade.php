@@ -7,7 +7,7 @@
             <h2 class="text-xl font-bold mb-4">System Update</h2>
 
             @if ($updateAvailable)
-                <div class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500">
+                <div class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500" wire:loading.remove>
                     <p><strong>New Version:</strong> {{ $updateAvailable['version'] }}</p>
                     <p><strong>Title:</strong> {{ $updateAvailable['title'] }}</p>
                     <p><strong>Description:</strong> {{ $updateAvailable['description'] }}</p>
@@ -23,7 +23,14 @@
                 </div>
             @endif
 
-            <div class="flex items-center justify-center mt-4" wire:loading wire:target="runUpdate">
+            <div class="flex items-center justify-center mt-4" wire:loading wire:target="runUpdate"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-95"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-95">
+                <div class="text-gray-700 font-semibold mr-8">Updating...</div>
                 <div class="spinner">
                     <div></div>
                     <div></div>
