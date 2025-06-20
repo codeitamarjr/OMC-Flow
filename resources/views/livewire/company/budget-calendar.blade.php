@@ -187,7 +187,8 @@
                                                 {{ $item['model']->contract->provider->name ?? ($item['model']->provider->name ?? '-') }}
                                             </td>
                                             <td class="px-4 py-2 border-b">
-                                                {{ Number::currency($item['model']->budget ?? 0, 'EUR') }}</td>
+                                                {{ Number::currency($item['model']->contract->budget ?? ($item['model']->budget ?? 0), 'EUR') }}
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
