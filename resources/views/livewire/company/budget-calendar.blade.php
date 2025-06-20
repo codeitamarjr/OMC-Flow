@@ -180,9 +180,9 @@
                                 <tbody>
                                     @foreach ($selectedDueItems as $item)
                                         <tr>
-                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->category->name ?? '-' }}
+                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->category->name ?? $item['model']->category->name ?? '-' }}
                                             </td>
-                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->provider->name ?? '-' }}
+                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->provider->name ?? $item['model']->provider->name ?? '-' }}
                                             </td>
                                             <td class="px-4 py-2 border-b">
                                                 {{ Number::currency($item['model']->budget ?? 0, 'EUR') }}</td>
