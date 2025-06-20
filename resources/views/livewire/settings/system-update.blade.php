@@ -18,7 +18,13 @@
                     Run Update
                 </button>
             @else
-                <div class="p-4 bg-green-100 border-l-4 border-green-500">
+                <div class="p-4 bg-green-100 border-l-4 border-green-500"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95">
                     Your application is up to date.
                 </div>
             @endif
@@ -42,8 +48,13 @@
             </div>
 
             @if ($log)
-                <div
-                    class="mt-6 bg-black text-green-400 p-4 text-sm whitespace-pre-wrap break-words transition-all duration-300 ease-in-out">
+                <div class="mt-6 bg-black text-green-400 p-4 text-sm whitespace-pre-wrap break-words transition-all duration-300 ease-in-out"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95">
                     {{ $log }}
                 </div>
 
