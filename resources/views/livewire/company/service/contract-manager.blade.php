@@ -22,7 +22,7 @@
                         </div>
                         <div class="text-right text-sm">
                             <div class="font-medium">€{{ number_format($contract->budget, 2) }}</div>
-                            <div class="text-xs text-gray-500">Next Due: {{ $contract->end_date ?? '—' }}</div>
+                            <div class="text-xs text-gray-500">End: {{ $contract->end_date ?? '—' }}</div>
                             <div class="text-xs">{{ ucfirst($contract->status) }}</div>
                         </div>
                     </div>
