@@ -19,7 +19,7 @@
                 <th class="px-4 py-3">Service</th>
                 <th class="px-4 py-3">Provider</th>
                 <th class="px-4 py-3">Budget (€)</th>
-                <th class="px-4 py-3">Next Due</th>
+                <th class="px-4 py-3">End</th>
                 <th class="px-4 py-3">Status</th>
                 <th></th>
             </tr>
