@@ -36,14 +36,16 @@
                 x-transition:leave="transition ease-in duration-300"
                 x-transition:leave-start="opacity-100 transform scale-100"
                 x-transition:leave-end="opacity-0 transform scale-95">
-                <div class="text-gray-700 font-semibold mr-8">Updating...</div>
-                <div class="spinner">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-gray-700 font-semibold mr-8">Updating...</div>
+                    <div class="spinner">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
                 </div>
             </div>
 
