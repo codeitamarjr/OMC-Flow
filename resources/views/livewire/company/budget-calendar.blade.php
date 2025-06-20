@@ -180,9 +180,11 @@
                                 <tbody>
                                     @foreach ($selectedDueItems as $item)
                                         <tr>
-                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->category->name ?? $item['model']->category->name ?? '-' }}
+                                            <td class="px-4 py-2 border-b">
+                                                {{ $item['model']->contract->category->name ?? ($item['model']->category->name ?? '-') }}
                                             </td>
-                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->provider->name ?? $item['model']->provider->name ?? '-' }}
+                                            <td class="px-4 py-2 border-b">
+                                                {{ $item['model']->contract->provider->name ?? ($item['model']->provider->name ?? '-') }}
                                             </td>
                                             <td class="px-4 py-2 border-b">
                                                 {{ Number::currency($item['model']->budget ?? 0, 'EUR') }}</td>
@@ -236,10 +238,10 @@
                                                         {{ \Carbon\Carbon::parse($dueItem['due_date'])->format('j M, Y') }}
                                                     </td>
                                                     <td class="px-6 py-4">
-                                                        {{ $dueItem['model']->category->name ?? '-' }}
+                                                        {{ $dueItem['model']->contract->category->name ?? ($dueItem['model']->category->name ?? '-') }}
                                                     </td>
                                                     <td class="px-6 py-4">
-                                                        {{ Number::currency($dueItem['model']->budget ?? 0, 'EUR') }}
+                                                        {{ Number::currency($dueItem['model']->contract->budget ?? ($dueItem['model']->budget ?? 0), 'EUR') }}
                                                     </td>
                                                     <td></td>
                                                 </tr>
