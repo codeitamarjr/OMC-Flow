@@ -180,10 +180,12 @@
                                 <tbody>
                                     @foreach ($selectedDueItems as $item)
                                         <tr>
-                                            <td class="px-4 py-2 border-b">{{ $item->category->name ?? '-' }}</td>
-                                            <td class="px-4 py-2 border-b">{{ $item->provider->name ?? '-' }}</td>
+                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->category->name ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-2 border-b">{{ $item['model']->contract->provider->name ?? '-' }}
+                                            </td>
                                             <td class="px-4 py-2 border-b">
-                                                {{ Number::currency($item->budget, 'EUR') }}</td>
+                                                {{ Number::currency($item['model']->budget ?? 0, 'EUR') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -200,7 +202,7 @@
                         $monthlyDueItems = collect($dueDatesByDay)
                             ->filter(fn($items, $date) => $date >= $currentMonthStart && $date <= $currentMonthEnd)
                             ->flatMap(fn($items) => $items)
-                            ->sortBy('next_due_date');
+                            ->sortBy('end_date');
                     @endphp
                     <section class="mt-12 md:mt-0 2xl:pl-14 w-full col-span-3">
                         <h2 class="text-base font-semibold text-gray-900">Monthly Budget for
@@ -229,15 +231,15 @@
                                             @forelse ($monthlyDueItems as $dueItem)
                                                 <tr
                                                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                                    <th scope="row"
+                                                    <td scope="row"
                                                         class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                        {{ \Carbon\Carbon::parse($dueItem->next_due_date)->format('j M, Y') }}
-                                                    </th>
-                                                    <td class="px-6 py-4">
-                                                        {{ $dueItem->category->name ?? '-' }}
+                                                        {{ \Carbon\Carbon::parse($dueItem['due_date'])->format('j M, Y') }}
                                                     </td>
                                                     <td class="px-6 py-4">
-                                                        {{ Number::currency($dueItem->budget, 'EUR') }}
+                                                        {{ $dueItem['model']->category->name ?? '-' }}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        {{ Number::currency($dueItem['model']->budget ?? 0, 'EUR') }}
                                                     </td>
                                                     <td></td>
                                                 </tr>

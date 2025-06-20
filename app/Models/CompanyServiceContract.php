@@ -15,7 +15,7 @@ class CompanyServiceContract extends Model
         'service_category_id',
         'budget',
         'start_date',
-        'next_due_date',
+        'end_date',
         'status',
         'notes',
     ];
@@ -33,5 +33,10 @@ class CompanyServiceContract extends Model
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
+    }
+
+    public function reminders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ContractReminder::class, 'company_service_contract_id');
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->decimal('budget', 12, 2)->nullable();
             $table->date('start_date')->nullable();
-            $table->date('next_due_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->enum('status', ['active', 'inactive', 'terminated'])->default('active');
             $table->text('notes')->nullable();
         });

@@ -23,7 +23,7 @@
 
     <flux:input wire:model.defer="budget" :label="__('Budget (€)')" type="number" step="0.01" />
     <flux:input wire:model.defer="start_date" :label="__('Start Date')" type="date" />
-    <flux:input wire:model.defer="next_due_date" :label="__('Next Due Date')" type="date" />
+    <flux:input wire:model.defer="end_date" :label="__('End Date')" type="date" />
 
     <flux:select wire:model.defer="status" :label="__('Status')">
         <option value="active">{{ __('Active') }}</option>

@@ -22,11 +22,24 @@
                         </div>
                         <div class="text-right text-sm">
                             <div class="font-medium">€{{ number_format($contract->budget, 2) }}</div>
-                            <div class="text-xs text-gray-500">Next Due: {{ $contract->next_due_date ?? '—' }}</div>
+                            <div class="text-xs text-gray-500">Next Due: {{ $contract->end_date ?? '—' }}</div>
                             <div class="text-xs">{{ ucfirst($contract->status) }}</div>
                         </div>
                     </div>
                     <div class="flex gap-2 mt-2 text-right">
+                        @foreach ($contract->reminders as $reminder)
+                            <div class="flex items-center gap-2">
+                                <div class="text-xs text-gray-500">{{ $reminder->title }} -
+                                    {{ \Carbon\Carbon::parse($reminder->due_date)->format('j M, Y') }}</div>
+                                <flux:button size="xs" variant="outline"
+                                    wire:click="editReminder({{ $reminder->id }})">{{ __('Edit Reminders') }}
+                                </flux:button>
+                            </div>
+                        @endforeach
+                        <flux:button size="sm" variant="outline"
+                            wire:click="openReminderModal({{ $contract->id }})">
+                            {{ __('Add Reminder') }}
+                        </flux:button>
                         <flux:button size="sm" variant="outline" wire:click="edit({{ $contract->id }})">
                             {{ __('Edit') }}
                         </flux:button>
@@ -104,6 +117,60 @@
                     <flux:button type="button" variant="outline" class="!text-red-600 hover:!bg-red-100"
                         wire:click="delete">
                         {{ __('Yes, delete') }}
+                    </flux:button>
+                </div>
+            </x-ui.modal>
+        @endif
+
+        {{-- REMINDER MODAL --}}
+        @if ($showReminderModal)
+            <x-ui.modal wire:model="showReminderModal">
+                <div class="mt-3 text-center sm:mt-5">
+                    <h3 class="text-base font-semibold text-gray-900">
+                        {{ $reminder_id ? __('Edit Reminder') : __('Add Contract Reminder') }}
+                    </h3>
+
+                    <div class="mt-4 space-y-4 text-left">
+                        <flux:input wire:model.defer="reminder_title" :label="__('Title')" />
+                        <flux:input wire:model.defer="reminder_due_date" type="date" :label="__('First Due Date')" />
+
+                        <flux:select wire:model.defer="reminder_frequency" :label="__('Frequency')">
+                            <option value="manual">{{ __('Manual') }}</option>
+                            <option value="weekly">{{ __('Weekly') }}</option>
+                            <option value="biweekly">{{ __('Biweekly') }}</option>
+                            <option value="semimonthly">{{ __('Semimonthly') }}</option>
+                            <option value="monthly">{{ __('Monthly') }}</option>
+                            <option value="bimonthly">{{ __('Bimonthly') }}</option>
+                            <option value="threemonthly">{{ __('Three-Monthly') }}</option>
+                            <option value="quarterly">{{ __('Quarterly') }}</option>
+                            <option value="yearly">{{ __('Yearly') }}</option>
+                            <option value="once">{{ __('Once') }}</option>
+                        </flux:select>
+
+                        <flux:input wire:model.defer="reminder_day_of_month" type="number" :label="__('Day of Month')"
+                            min="1" max="31" />
+
+                        <flux:input wire:model.defer="reminder_months_active_string"
+                            :label="__('Months Active (comma-separated)')" placeholder="e.g. 1,2,3,4,5,6" />
+                        <flux:input wire:model.defer="reminder_custom_dates_string"
+                            :label="__('Custom Dates (comma-separated)')" placeholder="e.g. 2025-01-01,2025-04-15" />
+
+                        <flux:input wire:model.defer="reminder_days_before" type="number"
+                            :label="__('Reminder Days Before')" min="0" />
+                        <flux:input wire:model.defer="reminder_days_after" type="number"
+                            :label="__('Reminder Days After')" min="0" />
+
+                        <flux:input wire:model.defer="reminder_notes" :label="__('Notes')" />
+                    </div>
+                </div>
+
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                    <flux:button type="button" variant="outline" class="w-full"
+                        wire:click="$set('showReminderModal', false)">
+                        {{ __('Cancel') }}
+                    </flux:button>
+                    <flux:button type="button" class="w-full" wire:click="saveReminder">
+                        {{ __('Save Reminder') }}
                     </flux:button>
                 </div>
             </x-ui.modal>

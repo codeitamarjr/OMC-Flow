@@ -31,7 +31,7 @@
                     <td class="px-4 py-2">{{ $contract->category->name }}</td>
                     <td class="px-4 py-2">{{ $contract->provider->name }}</td>
                     <td class="px-4 py-2 font-medium text-green-600">€{{ number_format($contract->budget, 2) }}</td>
-                    <td class="px-4 py-2">{{ $contract->next_due_date ?? '—' }}</td>
+                    <td class="px-4 py-2">{{ $contract->end_date ?? '—' }}</td>
                     <td class="px-4 py-2 capitalize">{{ $contract->status }}</td>
                     <td class="px-4 py-2 relative">
                         <div class="flex justify-end items-center h-full">
