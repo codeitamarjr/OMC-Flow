@@ -8,7 +8,7 @@
             </h1>
             <div class="flex items-center">
 
-                @if ($viewMode === 'monthly')
+                @if ($viewMode === 'month')
                     <div class="relative flex items-center rounded-md bg-white shadow-sm md:items-stretch">
                         <button type="button" wire:click="goToPreviousMonth"
                             class="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50">
@@ -75,7 +75,7 @@
                                 <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer
                                     {{ $viewMode == 'month' ? 'bg-gray-100 text-gray-900 outline-none' : '' }}"
                                     role="menuitem" tabindex="-1" id="menu-item-2"
-                                    @click="$wire.set('viewMode', 'monthly')">Month</a>
+                                    @click="$wire.set('viewMode', 'month')">Month</a>
                                 </div>
                                 <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer
                                     {{ $viewMode == 'year' ? 'bg-gray-100 text-gray-900 outline-none' : '' }}"
@@ -192,7 +192,7 @@
                     </div>
                 @endif
 
-                @if ($viewMode === 'monthly')
+                @if ($viewMode === 'month')
                     @php
                         $currentMonthStart = $currentDate->copy()->startOfMonth()->toDateString();
                         $currentMonthEnd = $currentDate->copy()->endOfMonth()->toDateString();
