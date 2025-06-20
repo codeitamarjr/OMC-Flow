@@ -136,7 +136,7 @@ When an admin invites a new user:
 - [ ] Support for Financial Statement (B1 + Accounts) due dates
 - [ ] Auto-download and store official CRO PDFs
 - [ ] Multi-tenant audit trail
-- [ ] Permissions per business (Granular access control)
+- [x] Permissions per business (Granular access control)
 - [x] Update the application from the app
 
 ---
