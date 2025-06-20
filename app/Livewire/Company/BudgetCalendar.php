@@ -103,13 +103,37 @@ class BudgetCalendar extends Component
                     $allDates[] = Carbon::parse($reminder->due_date)->toDateString();
                 }
 
-                // Add custom dates if manual
+                // Manual reminders with custom dates
                 if ($reminder->frequency === 'manual') {
                     $customDates = is_string($reminder->custom_dates) ? json_decode($reminder->custom_dates) : $reminder->custom_dates;
 
                     if (is_array($customDates)) {
                         foreach ($customDates as $customDate) {
                             $allDates[] = Carbon::parse($customDate)->toDateString();
+                        }
+                    }
+                } else {
+                    // Derive values from due_date if others are not set
+                    $baseDate = $reminder->due_date ? Carbon::parse($reminder->due_date) : $this->currentDate;
+                    $dayOfMonth = $reminder->day_of_month ?? $baseDate->day;
+                    $monthsActive = $reminder->months_active;
+
+                    // Convert JSON string to array if needed
+                    if (is_string($monthsActive)) {
+                        $monthsActive = json_decode($monthsActive, true);
+                    }
+
+                    // Default to all months if not set or invalid
+                    $monthsActive = is_array($monthsActive) && count($monthsActive) > 0 ? $monthsActive : range(1, 12);
+
+                    $year = $this->currentDate->year;
+
+                    foreach ($monthsActive as $month) {
+                        try {
+                            $date = Carbon::createFromDate($year, $month, $dayOfMonth)->toDateString();
+                            $allDates[] = $date;
+                        } catch (\Exception $e) {
+                            // Skip invalid dates like Feb 30
                         }
                     }
                 }
