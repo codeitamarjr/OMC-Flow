@@ -168,7 +168,6 @@
 
                             <h2 class="text-lg font-semibold mb-4">Due on
                                 {{ \Carbon\Carbon::parse($selectedDate)->format('jS F, Y') }}</h2>
-
                             <table class="min-w-full text-sm text-left border">
                                 <thead class="bg-gray-100">
                                     <tr>
