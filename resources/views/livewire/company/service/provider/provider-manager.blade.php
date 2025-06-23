@@ -12,27 +12,73 @@
         @endif
 
         <div class="space-y-2">
-            @forelse ($providers as $provider)
-                <div class="flex items-center justify-between border p-3 rounded-xl bg-white dark:bg-gray-800">
-                    <div>
-                        <div class="font-medium">{{ $provider->name }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $provider->email ?? 'No email' }} | {{ $provider->phone ?? 'No phone' }}
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <flux:button wire:click="edit({{ $provider->id }})" size="sm" variant="outline">
-                            {{ __('Edit') }}
-                        </flux:button>
-                        <flux:button size="sm" variant="outline" class="!text-red-600 hover:!bg-red-100"
-                            wire:click="confirmDelete({{ $provider->id }})">
-                            {{ __('Delete') }}
-                        </flux:button>
-                    </div>
-                </div>
-            @empty
-                <p class="text-sm text-gray-500">{{ __('No providers added yet.') }}</p>
-            @endforelse
+
+
+
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($providers as $provider)
+                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                x-data x-init="if (window.location.hash === '#provider-{{ $provider->id }}') $el.classList.add('alerts-border')" id="provider-{{ $provider->id }}">
+                                <th scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ $provider->name }}
+                                    <span class="text-xs text-gray-500">
+                                        ({{ $provider->email }}, {{ $provider->phone }})
+                                    </span>
+                                </th>
+                                <td class="px-6 py-4 text-right">
+                                    <flux:button wire:click="edit({{ $provider->id }})" size="sm"
+                                        variant="outline">
+                                        {{ __('Edit') }}
+                                    </flux:button>
+                                    <flux:button size="sm" variant="outline"
+                                        class="!text-red-600 hover:!bg-red-100"
+                                        wire:click="confirmDelete({{ $provider->id }})">
+                                        {{ __('Delete') }}
+                                    </flux:button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                    {{ __('No providers added yet.') }}
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- STYLES --}}
+            <style>
+                .alerts-border {
+                    background-color: rgba(28, 46, 203, 0.1);
+
+                    animation: blink 0.8s ease-in-out;
+                    animation-iteration-count: 5;
+                    animation-fill-mode: forwards;
+
+                    box-shadow: 0 0 10px rgba(28, 46, 203, 0.5);
+                }
+
+                @keyframes blink {
+                    50% {
+                        background-color: rgba(255, 255, 255, 0.5);
+                    }
+                }
+            </style>
 
             {{-- CREATE MODAL --}}
             @if ($showCreateModal)
