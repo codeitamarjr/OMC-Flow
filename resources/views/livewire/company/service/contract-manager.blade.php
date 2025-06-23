@@ -11,47 +11,65 @@
         @endif
 
         <div class="space-y-3">
-            @forelse ($contracts as $contract)
-                <div x-data x-init="if (window.location.hash === '#contract-{{ $contract->id }}') $el.classList.add('alerts-border')" class="border p-4 rounded-xl bg-white dark:bg-gray-800"
-                    id="contract-{{ $contract->id }}">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="text-sm text-gray-500">{{ $contract->company->name }}</div>
-                            <div class="text-lg font-semibold">{{ $contract->category->name }}</div>
-                            <div class="text-sm">{{ $contract->provider->name }}</div>
-                        </div>
-                        <div class="text-right text-sm">
-                            <div class="font-medium">€{{ number_format($contract->budget, 2) }}</div>
-                            <div class="text-xs text-gray-500">End: {{ $contract->end_date ?? '—' }}</div>
-                            <div class="text-xs">{{ ucfirst($contract->status) }}</div>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 mt-2 text-right">
-                        @foreach ($contract->reminders as $reminder)
-                            <div class="flex items-center gap-2">
-                                <div class="text-xs text-gray-500">{{ $reminder->title }} -
-                                    {{ \Carbon\Carbon::parse($reminder->due_date)->format('j M, Y') }}</div>
-                                <flux:button size="xs" variant="outline"
-                                    wire:click="editReminder({{ $reminder->id }})">{{ __('Edit Reminders') }}
-                                </flux:button>
-                            </div>
-                        @endforeach
-                        <flux:button size="sm" variant="outline"
-                            wire:click="openReminderModal({{ $contract->id }})">
-                            {{ __('Add Reminder') }}
-                        </flux:button>
-                        <flux:button size="sm" variant="outline" wire:click="edit({{ $contract->id }})">
-                            {{ __('Edit') }}
-                        </flux:button>
-                        <flux:button size="sm" variant="outline" class="!text-red-600 hover:!bg-red-100"
-                            wire:click="confirmDelete({{ $contract->id }})">
-                            {{ __('Delete') }}
-                        </flux:button>
-                    </div>
-                </div>
-            @empty
-                <p class="text-sm text-gray-500">{{ __('No contracts created yet.') }}</p>
-            @endforelse
+
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($contracts as $contract)
+                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                x-data x-init="if (window.location.hash === '#contract-{{ $contract->id }}') $el.classList.add('alerts-border')" id="contract-{{ $contract->id }}">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                    {{ $contract->company->name }}
+                                    <span class="text-xs text-gray-500">
+                                        ({{ $contract->category->name }}, {{ $contract->provider->name }})
+                                    </span>
+                                    @foreach ($contract->reminders as $reminder)
+                                        <div class="flex items-center gap-2">
+                                            <div class="text-xs text-gray-500">{{ $reminder->title }} -
+                                                {{ \Carbon\Carbon::parse($reminder->due_date)->format('j M, Y') }}</div>
+                                            <flux:button size="xs" variant="outline"
+                                                wire:click="editReminder({{ $reminder->id }})">
+                                                {{ __('Edit Reminders') }}
+                                            </flux:button>
+                                        </div>
+                                    @endforeach
+                                    <flux:button size="sm" variant="outline"
+                                        wire:click="openReminderModal({{ $contract->id }})">
+                                        {{ __('Add Reminder') }}
+                                    </flux:button>
+                                </th>
+                                <td class="px-6 py-4 text-right flex items-center justify-end space-x-2">
+                                    <flux:button size="sm" variant="outline"
+                                        wire:click="edit({{ $contract->id }})">
+                                        {{ __('Edit') }}
+                                    </flux:button>
+                                    <flux:button size="sm" variant="outline"
+                                        class="!text-red-600 hover:!bg-red-100"
+                                        wire:click="confirmDelete({{ $contract->id }})">
+                                        {{ __('Delete') }}
+                                    </flux:button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                    {{ __('No contracts added yet.') }}
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- CREATE MODAL --}}
@@ -179,19 +197,18 @@
     </x-contract.layout>
     <style>
         .alerts-border {
-            border: 4px #1c2ecb solid;
+            background-color: rgba(28, 46, 203, 0.1);
 
             animation: blink 0.8s ease-in-out;
             animation-iteration-count: 5;
             animation-fill-mode: forwards;
 
-            border-radius: 0.5rem;
             box-shadow: 0 0 10px rgba(28, 46, 203, 0.5);
         }
 
         @keyframes blink {
             50% {
-                border-color: #fff;
+                background-color: rgba(255, 255, 255, 0.5);
             }
         }
     </style>
