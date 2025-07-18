@@ -1,7 +1,7 @@
 <section class="w-full">
     @include('partials.provider-heading')
 
-    <x-provider.layout :heading="__('Manage Service Providers')" :subheading="__('Create and manage service providers for your OMC budget.')">
+    <x-provider.layout :heading="__('Manage Service Suppliers')" :subheading="__('Create and manage Service Suppliers for your OMC budget.')">
 
         @if (session('success'))
             <div class="mb-4">

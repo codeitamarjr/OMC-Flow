@@ -2,7 +2,7 @@
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist>
             <flux:navlist.item :href="route('company.service.provider.manager')" wire:navigate>
-                {{ __('Service Providers') }}
+                {{ __('Service Suppliers') }}
             </flux:navlist.item>
             <flux:navlist.item href="#" wire:click="openCreateModal">
                 {{ __('Create Provider') }}
