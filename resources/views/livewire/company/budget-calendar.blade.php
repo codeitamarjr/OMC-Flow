@@ -123,7 +123,7 @@
                             class="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
                             {{-- Padding for first week --}}
                             @for ($i = 1; $i < $firstDayOfWeek; $i++)
-                                <div class="bg-gray-50 py-1.5"></div>
+                                <div class="bg-gray-50 {{ $i == 1 ? 'rounded-tl-lg' : '' }} py-1.5"></div>
                             @endfor
 
                             {{-- Loop over days in month --}}
