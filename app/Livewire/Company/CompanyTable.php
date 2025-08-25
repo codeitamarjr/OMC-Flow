@@ -29,6 +29,7 @@ class CompanyTable extends Component
 
         $this->selectedTagFilters = session()->get('selected_tag_filters', []);
     }
+    
     /**
      * A computed property that returns a paginated list of companies
      * belonging to the current business, filtered by the search term.

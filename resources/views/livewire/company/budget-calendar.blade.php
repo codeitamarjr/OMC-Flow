@@ -41,9 +41,9 @@
                     <div class="max-w-sm mx-auto">
                         <label for="company" class="sr-only">Select an option</label>
                         <select id="company" wire:model.live="selectedCompanyId"
-                            class="font-semibold text-gray-900  text-sm rounded-lg block w-full p-2.5 px-3 gap-x-1.5 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                            <option selected>Choose a company</option>
-                            @foreach ($companies as $company)
+                            class="font-semibold text-gray-900 text-sm rounded-lg block w-full p-2.5 px-3 gap-x-1.5 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            <option value="">All companies in group</option>
+                            @foreach ($companyOptions as $company)
                                 <option value="{{ $company->id }}">{{ $company->name }}</option>
                             @endforeach
                         </select>
@@ -131,7 +131,7 @@
                                 @php
                                     $date = \Carbon\Carbon::create($monthDate->year, $monthDate->month, $day);
                                     $formattedDate = $date->toDateString();
-                                    $hasDue = $selectedCompanyId && isset($dueDatesByDay[$formattedDate]);
+                                    $hasDue = isset($dueDatesByDay[$formattedDate]);
                                     $cellIndex = $firstDayOfWeek - 1 + $day;
                                     $isFirstCell = $cellIndex === 1;
                                     $isLastCell = $cellIndex === $firstDayOfWeek - 1 + $daysInMonth;
@@ -140,7 +140,7 @@
                                 <button type="button" wire:click="showDueItems('{{ $formattedDate }}')"
                                     class="bg-white py-1.5 hover:bg-gray-100 focus:z-10 {{ $isFirstCell ? 'rounded-tl-lg' : '' }} {{ $isLastCell ? 'rounded-br-lg' : '' }}">
                                     <time datetime="{{ $formattedDate }}"
-                                        title="{{ $hasDue ? implode(', ', collect($dueDatesByDay[$formattedDate])->pluck('category.name')->toArray()) : '' }}"
+                                        title="{{ $hasDue ? implode(', ', collect($dueDatesByDay[$formattedDate])->pluck('title')->toArray()) : '' }}"
                                         class="mx-auto flex size-7 items-center justify-center rounded-full {{ $hasDue ? 'bg-indigo-600 font-semibold text-white cursor-pointer' : '' }}">
                                         {{ $day }}
                                     </time>

@@ -2,15 +2,18 @@
 
 namespace App\Livewire\Company;
 
+use Carbon\Carbon;
 use App\Models\Company;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CompanyServiceContract;
-use Carbon\Carbon;
 
 class BudgetCalendar extends Component
 {
-    public $companies;
+    use WithPagination;
+
     public $selectedCompanyId;
     public $monthlyContracts = [];
     public $calendar;
@@ -20,18 +23,66 @@ class BudgetCalendar extends Component
     public $selectedDate = null;
     public $selectedDueItems = [];
 
+    public $search = '';
+    public $perPage = 10;
+    public $sortBy = 'created_at';
+    public $sortDirection = 'asc';
+    public $allTags = [];
+    public array $selectedTagFilters = [];
+
 
     public function mount()
     {
-        $this->companies = Company::where('business_id', Auth::user()->current_business_id)->orderBy('name')->get();
+        $this->allTags = \App\Models\Tag::where('business_id', Auth::user()->current_business_id)
+            ->get(['id', 'name']);
+
+        $this->selectedTagFilters = session()->get('selected_tag_filters', []);
+
         $this->calendar = collect();
         $this->currentDate = Carbon::now();
-        $this->selectedCompanyId = session('selectedCompanyId');
         $this->viewMode = session('calendarViewMode', 'month');
 
-        if ($this->selectedCompanyId) {
-            $this->loadMonthlyContracts();
-        }
+        $this->selectedCompanyId = session('selectedCompanyId', $this->selectedCompanyId);
+
+        $this->loadMonthlyContracts();
+    }
+
+    #[Computed]
+    public function companies()
+    {
+        return Company::query()
+            ->where('business_id', Auth::user()->current_business_id)
+            ->when($this->selectedTagFilters, function ($query) {
+                $query->whereHas('tags', function ($q) {
+                    $q->whereIn('tags.id', $this->selectedTagFilters);
+                });
+            })
+            ->with(['contracts' => function ($q) {
+                $q->when($this->search, function ($subQuery) {
+                    $subQuery->whereHas('provider', function ($providerQuery) {
+                        $providerQuery->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhereHas('categories', function ($catQuery) {
+                                $catQuery->where('name', 'like', '%' . $this->search . '%');
+                            });
+                    });
+                })->with('provider', 'category');
+            }])
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate($this->perPage);
+    }
+
+    #[Computed]
+    public function companyOptions()
+    {
+        return Company::query()
+            ->where('business_id', Auth::user()->current_business_id)
+            ->when($this->selectedTagFilters, function ($query) {
+                $query->whereHas('tags', function ($q) {
+                    $q->whereIn('tags.id', $this->selectedTagFilters);
+                });
+            })
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 
     public function showDueItems($date)
@@ -63,49 +114,61 @@ class BudgetCalendar extends Component
 
     public function updatedSelectedCompanyId($value)
     {
-        session(['selectedCompanyId' => $value]);
+        session(['selectedCompanyId' => $value ?: null]);
         $this->loadMonthlyContracts();
+        $this->resetPage();
     }
 
     public function loadMonthlyContracts()
     {
         $this->dueDatesByDay = [];
-        if (!$this->selectedCompanyId) return;
 
-        $this->monthlyContracts = collect(range(1, 12))->mapWithKeys(function ($month) {
-            return [$month => collect()];
-        })->toArray();
+        $companyIds = $this->selectedCompanyId
+            ? [$this->selectedCompanyId]
+            : Company::query()
+            ->where('business_id', Auth::user()->current_business_id)
+            ->when($this->selectedTagFilters, function ($query) {
+                $query->whereHas('tags', function ($q) {
+                    $q->whereIn('tags.id', $this->selectedTagFilters);
+                });
+            })
+            ->pluck('id')
+            ->all();
 
-        if (!$this->selectedCompanyId) return;
+        if (empty($companyIds)) {
+            return;
+        }
+
+        $this->monthlyContracts = collect(range(1, 12))
+            ->mapWithKeys(fn($m) => [$m => collect()])
+            ->toArray();
 
         $contracts = CompanyServiceContract::with(['provider', 'category', 'reminders.contract'])
-            ->where('company_id', $this->selectedCompanyId)
+            ->whereIn('company_id', $companyIds)
             ->get();
 
         foreach ($contracts as $contract) {
-            // Add contract end_date (if any)
             if ($contract->end_date) {
                 $date = Carbon::parse($contract->end_date)->toDateString();
                 $this->dueDatesByDay[$date][] = [
-                    'type' => 'contract',
-                    'title' => "{$contract->category->name} - {$contract->provider->name}",
-                    'model' => $contract,
+                    'type'     => 'contract',
+                    'title'    => "{$contract->category->name} - {$contract->provider->name}",
+                    'model'    => $contract,
                     'due_date' => $date,
                 ];
             }
 
-
             foreach ($contract->reminders as $reminder) {
                 $allDates = [];
 
-                // Always include the primary due_date first
                 if ($reminder->due_date) {
                     $allDates[] = Carbon::parse($reminder->due_date)->toDateString();
                 }
 
-                // Manual reminders with custom dates
                 if ($reminder->frequency === 'manual') {
-                    $customDates = is_string($reminder->custom_dates) ? json_decode($reminder->custom_dates) : $reminder->custom_dates;
+                    $customDates = is_string($reminder->custom_dates)
+                        ? json_decode($reminder->custom_dates, true)
+                        : $reminder->custom_dates;
 
                     if (is_array($customDates)) {
                         foreach ($customDates as $customDate) {
@@ -113,19 +176,15 @@ class BudgetCalendar extends Component
                         }
                     }
                 } else {
-                    // Derive values from due_date if others are not set
-                    $baseDate = $reminder->due_date ? Carbon::parse($reminder->due_date) : $this->currentDate;
-                    $dayOfMonth = $reminder->day_of_month ?? $baseDate->day;
+                    $baseDate     = $reminder->due_date ? Carbon::parse($reminder->due_date) : $this->currentDate;
+                    $dayOfMonth   = $reminder->day_of_month ?? $baseDate->day;
                     $monthsActive = $reminder->months_active;
 
-                    // Convert JSON string to array if needed
                     if (is_string($monthsActive)) {
                         $monthsActive = json_decode($monthsActive, true);
                     }
 
-                    // Default to all months if not set or invalid
                     $monthsActive = is_array($monthsActive) && count($monthsActive) > 0 ? $monthsActive : range(1, 12);
-
                     $year = $this->currentDate->year;
 
                     foreach ($monthsActive as $month) {
@@ -133,17 +192,16 @@ class BudgetCalendar extends Component
                             $date = Carbon::createFromDate($year, $month, $dayOfMonth)->toDateString();
                             $allDates[] = $date;
                         } catch (\Exception $e) {
-                            // Skip invalid dates like Feb 30
+                            // Skip invalid dates (Feb 30 etc.)
                         }
                     }
                 }
 
-                // Add all to dueDatesByDay
                 foreach (array_unique($allDates) as $date) {
                     $this->dueDatesByDay[$date][] = [
-                        'type' => 'reminder',
-                        'title' => $reminder->title,
-                        'model' => $reminder,
+                        'type'     => 'reminder',
+                        'title'    => $reminder->title,
+                        'model'    => $reminder,
                         'due_date' => $date,
                     ];
                 }
@@ -151,8 +209,12 @@ class BudgetCalendar extends Component
         }
     }
 
+
     public function render()
     {
-        return view('livewire.company.budget-calendar');
+        return view('livewire.company.budget-calendar', [
+            'companies' => $this->companies,
+            'companyOptions' => $this->companyOptions,
+        ]);
     }
 }

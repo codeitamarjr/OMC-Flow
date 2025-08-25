@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use App\Models\CompanyCRODocument;
+use App\Models\CompanyServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -146,5 +147,10 @@ class Company extends Model
         return $this->croDocDefinitions
             ->where('pivot.completed', false)
             ->count();
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(CompanyServiceContract::class);
     }
 }
