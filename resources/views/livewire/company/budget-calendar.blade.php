@@ -209,13 +209,13 @@
                     <section class="mt-12 md:mt-0 2xl:pl-14 w-full col-span-3">
                         <h2 class="text-base font-semibold text-gray-900">Monthly Budget for
                             {{ $currentDate->format('F Y') }}</h2>
-                        <div class="mt-4 flex flex-col gap-y-1 text-sm/6 text-gray-500">
+                        <div class="mt-4 flex flex-col text-sm/6 text-gray-500">
                             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                                 @if ($monthlyDueItems->count() > 0)
                                     <table
                                         class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                         <thead
-                                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 rounded-t-full">
                                             <tr>
                                                 <th scope="col" class="px-6 py-3">
                                                     Due
