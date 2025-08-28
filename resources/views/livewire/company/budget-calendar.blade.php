@@ -138,7 +138,7 @@
                                 @endphp
 
                                 <button type="button" wire:click="showDueItems('{{ $formattedDate }}')"
-                                    class="bg-white py-1.5 hover:bg-gray-100 focus:z-10 {{ $isFirstCell ? 'rounded-tl-lg' : '' }} {{ $isLastCell ? 'rounded-br-lg' : '' }}">
+                                    class="bg-white py-1.5 hover:bg-gray-100 {{ $cellIndex == 7 ? 'rounded-tr-lg' : '' }} {{ $cellIndex == 36 ? 'rounded-bl-lg' : ($cellIndex == 29 && $firstDayOfWeek <= 6 ? 'rounded-bl-lg' : '') }} focus:z-10 {{ $isFirstCell ? 'rounded-tl-lg' : '' }} {{ $isLastCell ? 'rounded-br-lg' : '' }}">
                                     <time datetime="{{ $formattedDate }}"
                                         title="{{ $hasDue ? implode(', ', collect($dueDatesByDay[$formattedDate])->pluck('title')->toArray()) : '' }}"
                                         class="mx-auto flex size-7 items-center justify-center rounded-full {{ $hasDue ? 'bg-indigo-600 font-semibold text-white cursor-pointer' : '' }}">
