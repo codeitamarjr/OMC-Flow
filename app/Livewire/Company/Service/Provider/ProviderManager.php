@@ -49,7 +49,8 @@ class ProviderManager extends Component
     public function loadProviders()
     {
         $this->authorize('viewAny', ServiceProvider::class);
-        $this->providers = ServiceProvider::where('business_id', Auth::user()->current_business_id)->get();
+        $this->providers = ServiceProvider::where('business_id', Auth::user()->current_business_id)->get()
+            ->sortBy('name');
     }
 
     public function openCreateModal()
