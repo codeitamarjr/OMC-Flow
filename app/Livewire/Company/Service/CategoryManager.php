@@ -35,7 +35,8 @@ class CategoryManager extends Component
     public function loadCategories()
     {
         $this->authorize('viewAny', ServiceCategory::class);
-        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get();
+        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get()
+            ->sortBy('name');
     }
 
     public function openCreateModal()
