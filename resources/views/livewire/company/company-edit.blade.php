@@ -16,6 +16,7 @@
             <flux:input wire:model="custom" :label="__('Custom')" />
             <flux:input wire:model="company_type" :label="__('Company Type')" />
             <flux:input wire:model="status" :label="__('Status')" />
+            <flux:checkbox wire:model="active" :label="__('Active')" />
             <flux:input wire:model="effective_date" :label="__('Effective Date')" type="date" />
             <flux:input wire:model="registration_date" :label="__('Registration Date')" type="date" />
             <flux:input wire:model="last_annual_return" :label="__('Last Annual Return')" type="date" />

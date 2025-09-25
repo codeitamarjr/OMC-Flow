@@ -15,6 +15,7 @@ class CompanyEdit extends Component
     public ?string $custom = null;
     public ?string $company_type = null;
     public ?string $status = null;
+    public bool $active = true;
     public ?string $effective_date = null;
     public ?string $registration_date = null;
     public ?string $last_annual_return = null;
@@ -40,6 +41,7 @@ class CompanyEdit extends Component
             'custom' => 'nullable|string',
             'company_type' => 'nullable|string',
             'status' => 'nullable|string',
+            'active' => 'boolean',
             'effective_date' => 'nullable|date',
             'registration_date' => 'nullable|date',
             'last_annual_return' => 'nullable|date',
@@ -72,6 +74,7 @@ class CompanyEdit extends Component
             'custom',
             'company_type',
             'status',
+            'active',
             'effective_date',
             'registration_date',
             'last_annual_return',
@@ -101,6 +104,7 @@ class CompanyEdit extends Component
             'custom' => $this->custom,
             'company_type' => $this->company_type,
             'status' => $this->status,
+            'active' => $this->active,
             'effective_date' => $this->effective_date,
             'registration_date' => $this->registration_date,
             'last_annual_return' => $this->last_annual_return,

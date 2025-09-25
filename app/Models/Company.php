@@ -20,6 +20,7 @@ class Company extends Model
         'company_number',
         'company_type',
         'status',
+        'active',
         'effective_date',
         'registration_date',
         'last_annual_return',
@@ -36,6 +37,18 @@ class Company extends Model
         'place_of_business',
         'company_type_code',
         'company_status_code',
+    ];
+
+    protected $casts = [
+        'effective_date' => 'date',
+        'registration_date' => 'date',
+        'last_annual_return' => 'date',
+        'next_annual_return' => 'date',
+        'next_financial_statement_due' => 'date',
+        'last_accounts' => 'date',
+        'last_agm' => 'date',
+        'financial_year_end' => 'date',
+        'active' => 'boolean',
     ];
 
     /**

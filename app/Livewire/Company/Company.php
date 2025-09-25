@@ -27,6 +27,7 @@ class Company extends Component
     public bool $showCroDefinitionsModal = false;
     public array $financialYearEnds = [];
     public array $lastAGMs = [];
+    public $active = true;
 
     public $companyDetailsModal = false;
     public ?ModelsCompany $viewingCompany = null;
@@ -77,6 +78,7 @@ class Company extends Component
     {
         return Business::find(Auth::user()->currentBusiness->id)->companies()
             ->with('croDocDefinitions')
+            ->where('active', $this->active)
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -95,6 +97,11 @@ class Company extends Component
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
+    }
+
+    public function showAllCompanies()
+    {
+        $this->active = !$this->active;
     }
 
     /**

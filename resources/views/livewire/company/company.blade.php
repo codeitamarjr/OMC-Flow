@@ -38,9 +38,10 @@
                     class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                     <div class="flex items-center space-x-3 w-full md:w-auto">
                         {{-- Actions --}}
-                        <div class="relative">
-                            <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 cursor-not-allowed"
+                        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                            <button @click="open = !open" id="actionsDropdownButton"
+                                data-dropdown-toggle="actionsDropdown"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 type="button">
                                 <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -49,26 +50,28 @@
                                 </svg>
                                 Actions
                             </button>
-                            <div id="actionsDropdown"
-                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                            {{-- Dropdown menu --}}
+                            <div id="actionsDropdown" x-show="open" @click.away="open = false"
+                                class="absolute right-0 z-10 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
                                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="actionsDropdownButton">
                                     <li>
-                                        <a href="#"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mass
-                                            Edit</a>
+                                        <button wire:click="showAllCompanies"
+                                            class="w-full text-left block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
+                                            {{ !$active ? 'Show Only Active' : 'Show Only Inactive' }}
+                                        </button>
                                     </li>
                                 </ul>
                                 <div class="py-1">
                                     <a href="#"
-                                        class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete
+                                        class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-not-allowed">Delete
                                         all</a>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Filter --}}
-                        <div class="relative" x-data="{ showDropDown: false }">
+                        <div class="relative" x-data="{ showDropDown: false }" @click.outside="showDropDown = false">
                             <button id="filterDropdownButton" @click="showDropDown = !showDropDown"
                                 data-dropdown-toggle="filterDropdown"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"

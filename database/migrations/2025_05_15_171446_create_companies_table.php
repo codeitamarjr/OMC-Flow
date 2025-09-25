@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('company_number')->unique();
             $table->string('company_type');
             $table->string('status')->default('Active');
+            $table->boolean('active')->default(true)->index();
 
             $table->date('effective_date')->nullable();
             $table->date('registration_date')->nullable();
