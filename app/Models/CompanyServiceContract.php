@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\Company;
 use App\Models\ServiceCategory;
-use App\Models\ServiceProvider;
+use App\Models\ServiceSupplier;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanyServiceContract extends Model
@@ -27,7 +27,7 @@ class CompanyServiceContract extends Model
 
     public function provider(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(ServiceProvider::class, 'service_provider_id');
+        return $this->belongsTo(ServiceSupplier::class, 'service_provider_id');
     }
 
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use App\Services\System\SystemUpdateService;
 
-class AppServiceProvider extends ServiceProvider
+class AppServiceSupplier extends ServiceProvider
 {
     /**
      * Register any application services.

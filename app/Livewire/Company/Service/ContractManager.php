@@ -5,7 +5,7 @@ namespace App\Livewire\Company\Service;
 use App\Models\Company;
 use Livewire\Component;
 use App\Models\ServiceCategory;
-use App\Models\ServiceProvider;
+use App\Models\ServiceSupplier;
 use App\Models\ContractReminder;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CompanyServiceContract;
@@ -82,7 +82,7 @@ class ContractManager extends Component
         $this->validate([
             'company_id' => 'required|exists:companies,id',
             'service_category_id' => 'required|exists:service_categories,id',
-            'service_provider_id' => 'required|exists:service_providers,id',
+            'service_provider_id' => 'required|exists:service_suppliers,id',
             'budget' => 'nullable|numeric',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
@@ -127,7 +127,7 @@ class ContractManager extends Component
         $this->validate([
             'company_id' => 'required|exists:companies,id',
             'service_category_id' => 'required|exists:service_categories,id',
-            'service_provider_id' => 'required|exists:service_providers,id',
+            'service_provider_id' => 'required|exists:service_suppliers,id',
             'budget' => 'nullable|numeric',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',

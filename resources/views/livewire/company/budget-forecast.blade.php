@@ -273,7 +273,7 @@
                                                 x-data="{ tooltip: false }" @mouseover="tooltip = true"
                                                 @mouseleave="tooltip = false">
                                                 <div class="relative">
-                                                    <a href="{{ route('company.service.provider.manager') }}#provider-{{ $contract->provider->id }}"
+                                                    <a href="{{ route('company.service.supplier.manager') }}#provider-{{ $contract->provider->id }}"
                                                         target="_blank">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                             viewBox="0 0 24 24" stroke-width="1.5"

@@ -75,7 +75,7 @@
                             <flux:menu.item :href="route('company.manage')" icon="briefcase" wire:navigate>{{ __('Companies') }}</flux:menu.item>
                             <flux:menu.item :href="route('cro-definitions')" icon="document-duplicate" wire:navigate>{{ __('CRO Definitions') }}</flux:menu.item>
                             <flux:menu.item :href="route('company.service.category.manager')" icon="queue-list" wire:navigate>{{ __('Service Categories') }}</flux:menu.item>
-                            <flux:menu.item :href="route('company.service.provider.manager')" icon="document-text" wire:navigate>{{ __('Service Suppliers') }}</flux:menu.item>
+                            <flux:menu.item :href="route('company.service.supplier.manager')" icon="document-text" wire:navigate>{{ __('Service Suppliers') }}</flux:menu.item>
                             <flux:menu.item :href="route('company.service.contract.manager')" icon="arrow-down-on-square-stack" wire:navigate>{{ __('Service Contracts') }}</flux:menu.item>
                         @endif
                     </flux:menu.radio.group>

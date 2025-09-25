@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Livewire\Company\Service\Provider;
+namespace App\Livewire\Company\Service\Supplier;
 
 use Livewire\Component;
 use App\Models\ServiceCategory;
-use App\Models\ServiceProvider;
+use App\Models\ServiceSupplier;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class ProviderManager extends Component
+class SupplierManager extends Component
 {
     use AuthorizesRequests;
 
@@ -25,11 +25,11 @@ class ProviderManager extends Component
 
     public bool $showCreateModal = false;
 
-    public ?ServiceProvider $confirmingDelete = null;
+    public ?ServiceSupplier $confirmingDelete = null;
     public bool $showDeleteModal = false;
 
     public bool $showEditModal = false;
-    public ?ServiceProvider $editingProvider = null;
+    public ?ServiceSupplier $editingProvider = null;
     public string $editName = '';
     public string $editContactName = '';
     public string $editEmail = '';
@@ -49,14 +49,14 @@ class ProviderManager extends Component
 
     public function loadProviders()
     {
-        $this->authorize('viewAny', ServiceProvider::class);
-        $this->providers = ServiceProvider::where('business_id', Auth::user()->current_business_id)->get()
+        $this->authorize('viewAny', ServiceSupplier::class);
+        $this->providers = ServiceSupplier::where('business_id', Auth::user()->current_business_id)->get()
             ->sortBy('name');
     }
 
     public function openCreateModal()
     {
-        $this->authorize('create', ServiceProvider::class);
+        $this->authorize('create', ServiceSupplier::class);
         $this->reset(['name', 'contact_name', 'email', 'phone', 'website', 'address', 'notes']);
         $this->resetValidation();
         $this->showCreateModal = true;
@@ -64,14 +64,14 @@ class ProviderManager extends Component
 
     public function create()
     {
-        $this->authorize('create', ServiceProvider::class);
+        $this->authorize('create', ServiceSupplier::class);
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
         ]);
 
-        $provider = ServiceProvider::create([
+        $provider = ServiceSupplier::create([
             'business_id' => Auth::user()->current_business_id,
             'name' => $this->name,
             'contact_name' => $this->contact_name,
@@ -95,7 +95,7 @@ class ProviderManager extends Component
 
     public function confirmDelete($id)
     {
-        $this->confirmingDelete = ServiceProvider::findOrFail($id);
+        $this->confirmingDelete = ServiceSupplier::findOrFail($id);
         $this->authorize('delete', $this->confirmingDelete);
         $this->showDeleteModal = true;
     }
@@ -113,7 +113,7 @@ class ProviderManager extends Component
 
     public function edit($id)
     {
-        $this->editingProvider = ServiceProvider::findOrFail($id);
+        $this->editingProvider = ServiceSupplier::findOrFail($id);
         $this->authorize('update', $this->editingProvider);
 
         $this->editName = $this->editingProvider->name;

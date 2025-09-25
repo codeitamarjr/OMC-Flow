@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\ServiceProvider;
+use App\Models\ServiceSupplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -25,6 +25,6 @@ class ServiceCategory extends Model
 
     public function providers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(ServiceProvider::class)->withTimestamps();
+        return $this->belongsToMany(ServiceSupplier::class)->withTimestamps();
     }
 }
