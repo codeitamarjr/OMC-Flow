@@ -51,7 +51,7 @@ class ContractManager extends Component
     public function mount()
     {
         $this->companies = Company::where('business_id', Auth::user()->current_business_id)->orderBy('name')->get();
-        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get();
+        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get()->sortBy('name');
         $this->providers = collect();
         $this->loadContracts();
     }
