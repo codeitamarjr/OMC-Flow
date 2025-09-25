@@ -320,7 +320,7 @@
                                         ];
                                     @endphp
                                     <span
-                                        class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium 
+                                        class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium absolute 
                                             {{ $statusClasses[$company->ar_status] ?? $statusClasses['Compliant'] }}">
                                         {{-- Tooltip --}}
                                         {{-- Tooltip Trigger --}}
@@ -507,7 +507,33 @@
                                                     {{ $doc->name }}
                                                 </td>
                                                 <td class="px-4 py-2">{{ $doc->code }}</td>
-                                                <td></td>
+                                                <td class="px-4 py-2 flex items-center">
+                                                    <div x-data="{ tooltip: false }">
+                                                        {{-- Tooltip --}}
+                                                        {{-- Tooltip Trigger --}}
+                                                        <div @mouseover="tooltip = true" @mouseleave="tooltip = false"
+                                                            class="absolute">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                viewBox="0 0 24 24" stroke-width="1.5"
+                                                                stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                                            </svg>
+
+                                                            {{-- Tooltip Box --}}
+                                                            <div x-show="tooltip"
+                                                                x-transition:enter="transition ease-out duration-500"
+                                                                x-transition:enter-start="opacity-0 translate-y-1"
+                                                                x-transition:enter-end="opacity-100 translate-y-0"
+                                                                x-transition:leave="transition ease-in duration-150"
+                                                                x-transition:leave-start="opacity-100 translate-y-0"
+                                                                x-transition:leave-end="opacity-0 translate-y-1"
+                                                                class="absolute left-1/2 top-full mt-2 -translate-x-1/2 z-50 w-[200px] rounded-lg bg-gray-700 py-1.5 px-3 font-sans text-sm font-normal text-white text-center">
+                                                                {{ $doc->description ?? 'No description available.' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td class="px-4 py-2">{{ $doc->days_from_ard }}</td>
                                                 <td class="px-4 py-2">
                                                     <div class="flex items-center">
