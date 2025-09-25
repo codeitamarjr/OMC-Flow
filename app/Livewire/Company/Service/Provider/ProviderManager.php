@@ -43,7 +43,8 @@ class ProviderManager extends Component
     public function mount()
     {
         $this->loadProviders();
-        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get();
+        $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get()
+            ->sortBy('name');
     }
 
     public function loadProviders()
