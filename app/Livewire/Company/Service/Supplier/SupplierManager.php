@@ -12,7 +12,7 @@ class SupplierManager extends Component
 {
     use AuthorizesRequests;
 
-    public $providers;
+    public $suppliers;
     public $categories;
 
     public string $name = '';
@@ -22,6 +22,7 @@ class SupplierManager extends Component
     public string $website = '';
     public string $address = '';
     public string $notes = '';
+    public string $search = '';
 
     public bool $showCreateModal = false;
 
@@ -42,16 +43,36 @@ class SupplierManager extends Component
 
     public function mount()
     {
-        $this->loadProviders();
+        $this->loadSuppliers();
         $this->categories = ServiceCategory::where('business_id', Auth::user()->current_business_id)->get()
             ->sortBy('name');
     }
 
-    public function loadProviders()
+    public function loadSuppliers()
     {
         $this->authorize('viewAny', ServiceSupplier::class);
-        $this->providers = ServiceSupplier::where('business_id', Auth::user()->current_business_id)->get()
-            ->sortBy('name');
+
+        $businessId = Auth::user()->current_business_id;
+        $term = trim($this->search);
+
+        $query = ServiceSupplier::query()
+            ->where('business_id', $businessId);
+
+        if ($term !== '') {
+            // escape % and _ for LIKE
+            $safe = str_replace(['%', '_'], ['\%', '\_'], $term);
+            $query->where(function ($q) use ($safe) {
+                $q->where('name', 'like', "%{$safe}%")
+                    ->orWhere('contact_name', 'like', "%{$safe}%");
+            });
+        }
+
+        $this->suppliers = $query->orderBy('name')->get();
+    }
+
+    public function updatedSearch()
+    {
+        $this->loadSuppliers();
     }
 
     public function openCreateModal()
@@ -88,7 +109,7 @@ class SupplierManager extends Component
 
         $this->reset(['name', 'contact_name', 'email', 'phone', 'website', 'address', 'notes']);
         $this->showCreateModal = false;
-        $this->loadProviders();
+        $this->loadSuppliers();
         session()->flash('success', 'Service provider created.');
         $this->dispatch('provider-created');
     }
@@ -107,7 +128,7 @@ class SupplierManager extends Component
         abort_unless(Auth::user()->ownsBusiness($this->confirmingDelete->business_id), 403);
         $this->confirmingDelete->delete();
         $this->reset('confirmingDelete', 'showDeleteModal');
-        $this->loadProviders();
+        $this->loadSuppliers();
         session()->flash('success', 'Provider deleted.');
     }
 
@@ -163,13 +184,13 @@ class SupplierManager extends Component
             'showEditModal',
         ]);
 
-        $this->loadProviders();
+        $this->loadSuppliers();
         session()->flash('success', 'Provider updated.');
     }
 
 
     public function render()
     {
-        return view('livewire.company.service.provider.provider-manager');
+        return view('livewire.company.service.supplier.supplier-manager');
     }
 }

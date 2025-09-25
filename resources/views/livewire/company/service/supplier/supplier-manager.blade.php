@@ -1,8 +1,8 @@
 <section class="w-full">
-    @include('partials.provider-heading')
+    @include('partials.supplier-heading')
 
-    <x-provider.layout :heading="__('Manage Service Suppliers')" :subheading="__('Create and manage Service Suppliers for your OMC budget.')">
-
+    <x-supplier.layout :heading="__('Manage Service Suppliers')" :subheading="__('Create and manage Service Suppliers for your OMC budget.')">
+        {{-- Flash messages --}}
         @if (session('success'))
             <div class="mb-4">
                 <x-ui.flash-message type="success" title="Success">
@@ -20,7 +20,14 @@
         @endif
 
         <div class="mt-6 space-y-4">
-            <table class="w-full text-left table-auto min-w-max">
+
+            <div class="flex justify-between mb-4 space-x-4">
+                <input type="text" wire:model.live.debounce.500ms="search" placeholder="Search suppliers..."
+                    class="border rounded p-2" />
+            </div>
+
+
+            <table class="w-full text-left table-auto min-w-max" wire:loading.class="opacity-50">
                 <thead>
                     <tr>
                         <th scope="col" class="px-6 py-3">
@@ -32,22 +39,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($providers as $provider)
+                    @forelse ($suppliers as $supplier)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
-                            x-data x-init="if (window.location.hash === '#provider-{{ $provider->id }}') $el.classList.add('alerts-border')" id="provider-{{ $provider->id }}">
+                            x-data x-init="if (window.location.hash === '#supplier-{{ $supplier->id }}') $el.classList.add('alerts-border')" id="supplier-{{ $supplier->id }}">
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $provider->name }}
+                                {{ $supplier->name }}
                                 <span class="text-xs text-gray-500">
-                                    ({{ $provider->email }}, {{ $provider->phone }})
+                                    ({{ $supplier->email }}, {{ $supplier->phone }})
                                 </span>
                             </th>
                             <td class="p-4 border-b border-blue-gray-50">
-                                <flux:button wire:click="edit({{ $provider->id }})" size="sm" variant="outline">
+                                <flux:button wire:click="edit({{ $supplier->id }})" size="sm" variant="outline">
                                     {{ __('Edit') }}
                                 </flux:button>
                                 <flux:button size="sm" variant="outline" class="!text-red-600 hover:!bg-red-100"
-                                    wire:click="confirmDelete({{ $provider->id }})">
+                                    wire:click="confirmDelete({{ $supplier->id }})">
                                     {{ __('Delete') }}
                                 </flux:button>
                             </td>
@@ -55,7 +62,7 @@
                     @empty
                         <tr>
                             <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                {{ __('No providers added yet.') }}
+                                {{ __('No suppliers added yet.') }}
                             </td>
                         </tr>
                     @endforelse
@@ -195,5 +202,5 @@
                 </x-ui.modal>
             @endif
         </div>
-    </x-provider.layout>
+    </x-supplier.layout>
 </section>
