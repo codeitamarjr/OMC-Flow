@@ -9,8 +9,25 @@
                 </x-ui.flash-message>
             </div>
         @endif
+        @if (session('error'))
+            <div class="mb-4">
+                <x-ui.flash-message type="error" title="Error">
+                    {{ session('error') }}
+                </x-ui.flash-message>
+            </div>
+        @endif
 
         <form wire:submit.prevent="save" class="my-6 w-full space-y-6">
+            <div class="flex flex-wrap items-center gap-4">
+                <flux:button type="button" variant="outline" wire:click="refreshFromCro"
+                    wire:loading.attr="disabled" wire:target="refreshFromCro">
+                    <span wire:loading.remove wire:target="refreshFromCro">{{ __('Refresh From CRO') }}</span>
+                    <span wire:loading wire:target="refreshFromCro">{{ __('Refreshing...') }}</span>
+                </flux:button>
+                <p class="text-sm text-gray-500">
+                    {{ __('Pulls the latest details from the CRO into this form. Save afterwards to persist the changes.') }}
+                </p>
+            </div>
             <flux:input wire:model="company_number" :label="__('Company Number')" required />
             <flux:input wire:model="name" :label="__('Name')" required />
             <flux:input wire:model="custom" :label="__('Custom')" />
