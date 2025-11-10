@@ -416,6 +416,12 @@
                                                             </li>
                                                         </ul> --}}
                                             <div class="py-1">
+                                                <div wire:click="refreshCompanyFromCro({{ $company->id }})"
+                                                    @click="dropdown = false"
+                                                    class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
+                                                    Refresh from CRO</div>
+                                            </div>
+                                            <div class="py-1">
                                                 <div wire:click="viewCompanyDetails({{ $company->id }})"
                                                     class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
                                                     View</div>
