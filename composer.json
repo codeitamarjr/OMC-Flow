@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.343",
-        "codeitamarjr/laravel-cro-api": "*",
+        "codeitamarjr/laravel-cro-api": "^0.1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
