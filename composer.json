@@ -41,11 +41,8 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "packages/laravel-cro-api",
-            "options": {
-                "symlink": true
-            }
+            "type": "vcs",
+            "url": "https://github.com/codeitamarjr/laravel-cro-api"
         }
     ],
     "scripts": {

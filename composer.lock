@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "429f1325d9617a62cb3ad5db50bfa332",
+    "content-hash": "9aa936ffd7d48af6c464ceb149be3006",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -289,10 +289,16 @@
         {
             "name": "codeitamarjr/laravel-cro-api",
             "version": "0.1.0",
-            "dist": {
-                "type": "path",
-                "url": "packages/laravel-cro-api",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codeitamarjr/laravel-cro-api.git",
                 "reference": "9428fb5553c125e26f45d83ea2b6b307be670840"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codeitamarjr/laravel-cro-api/zipball/9428fb5553c125e26f45d83ea2b6b307be670840",
+                "reference": "9428fb5553c125e26f45d83ea2b6b307be670840",
+                "shasum": ""
             },
             "require": {
                 "illuminate/http": "^10.0|^11.0|^12.0",
@@ -330,10 +336,7 @@
                 "issues": "https://github.com/codeitamarjr/laravel-cro-api/issues",
                 "source": "https://github.com/codeitamarjr/laravel-cro-api"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "time": "2025-11-17T16:15:58+00:00"
         },
         {
             "name": "composer/pcre",
