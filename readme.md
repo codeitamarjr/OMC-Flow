@@ -21,8 +21,18 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
 - Uses official CRO API to:
   - Retrieve company details
   - Fetch and update company submission documents
-- Form-specific logic to determine expected submission deadlines
-- Handles Cloudflare `1015` rate limiting gracefully
+- Auto-sync officer snapshots (when available in CRO payload)
+- Track obligation statuses in `company_cro_document`:
+  - `completed`
+  - `due_soon`
+  - `missing`
+  - `overdue`
+  - `risky`
+- Auto-create deadline metadata:
+  - `B1` (based on ARD + configured days)
+  - `B10` officer changes (event-based when officer dates are available)
+- Handles invalid/null CRO responses with fallback logic
+- Uses corrected company submissions endpoint: `company/{company_num}/c/submissions`
 
 ### ✅ Submission Tracking
 - Retrieve and cache submissions with a dedicated job
@@ -30,11 +40,15 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
 - View historical submissions in a responsive modal with Alpine.js + Livewire
 
 ### ✅ Compliance Dashboard
-- Display compliance status:
-  - `Overdue`: past due date
-  - `Due Soon`: within 15 days
-  - `Compliant`: future-dated
-- Badges shown in real time on the company table
+- Dashboard widget now shows:
+  - Active companies tracked
+  - Overdue, risky, due soon, and missing totals
+  - Last synced at timestamp
+- Dashboard company table now summarizes risk per company:
+  - Next core CRO deadline (`B1` / `B10`)
+  - Risk level (`High`, `Elevated`, `Medium`, `Low`, `Compliant`)
+  - Issue badges (`Overdue`, `Risky`, `Missing`)
+  - Sort by nearest deadline and highest risk
 
 ### ✅ Team Management
 - Invite users by email and auto-create accounts if needed
@@ -45,6 +59,12 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
 ### ✅ Job + Command Architecture
 - `CompanyFetchCroSubmissions` Job fetches & syncs company submission data
 - `RefreshCroSubmissions` Artisan command updates all companies in batches
+- `RefreshCompaniesFromCro` dispatches `RefreshSingleCompanyFromCro` for all valid companies
+- `RefreshSingleCompanyFromCro` updates:
+  - company profile fields
+  - filing history
+  - officer snapshot
+  - obligation status/risk/deadline metadata
 - Handles duplicate updates and throttles requests between batches
 
 ---
@@ -71,8 +91,9 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
 
    Then add your [CRO API credentials](https://services.cro.ie/cws/documentation) to `.env`:
    ```env
-   SERVICES_CRO_EMAIL=your@email.com
-   SERVICES_CRO_KEY=your_cro_api_key
+   CRO_EMAIL=your@email.com
+   CRO_API_KEY=your_cro_api_key
+   CRO_QUEUE=default
    ```
 
 4. **Run migrations**
@@ -93,6 +114,65 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
 ```bash
 php artisan cro:refresh-submissions
 ```
+
+### Run Full CRO Company Refresh (All Companies)
+```bash
+php artisan queue:restart
+php artisan migrate --force
+php artisan tinker --execute="\App\Jobs\RefreshCompaniesFromCro::dispatch();"
+php artisan queue:work database --queue=default --tries=3 --timeout=180 --stop-when-empty
+```
+
+### Daily Automation (Current Status)
+- Daily sync is **not automatically scheduled yet** by default.
+- Current operation is manual dispatch + queue worker.
+- To run daily, add a scheduler entry and ensure `php artisan schedule:run` is executed by cron.
+
+---
+
+## 📌 CRO Auto-Sync Update (2026-02-05)
+
+### What changed
+- Extended `RefreshSingleCompanyFromCro` to sync:
+  - Company details
+  - Filing history (`company_submission_documents`)
+  - Officer snapshot (`companies.cro_officers_snapshot`, `companies.cro_officers_synced_at`)
+  - Obligation statuses and deadlines on `company_cro_document`
+- Added core obligation focus in UI and sorting:
+  - Company list and dashboard now summarize core CRO obligations (`B1`, `B10`)
+  - Company list supports filter reset, obligation filters, nearest deadline sort, and highest risk sort
+- Updated dashboard table:
+  - Removed actions column
+  - Added risk-summary-oriented columns and badges
+- Added migration:
+  - `2026_02_05_160000_add_cro_sync_columns`
+- Added resilient fallback handling for CRO submissions:
+  - If `getCompanySubmissions()` fails or returns invalid payload, fallback logic keeps job running
+
+### Database fields added
+- `companies`
+  - `cro_officers_snapshot` (JSON)
+  - `cro_officers_synced_at` (timestamp)
+- `company_cro_document`
+  - `due_date`
+  - `last_filed_at`
+  - `status`
+  - `risk_level`
+  - `notes`
+
+### Commands executed and result
+- Ran full refresh flow for all companies
+- Queue processing finished with no pending jobs:
+  - `pending_jobs=0`
+- Current obligation status totals:
+  - `completed: 35`
+  - `missing: 123`
+  - `overdue: 3`
+  - `risky: 7`
+- Current risk totals:
+  - `high: 3`
+  - `medium: 130`
+  - `low: 35`
 
 ---
 

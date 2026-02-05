@@ -37,6 +37,8 @@ class Company extends Model
         'place_of_business',
         'company_type_code',
         'company_status_code',
+        'cro_officers_snapshot',
+        'cro_officers_synced_at',
     ];
 
     protected $casts = [
@@ -49,6 +51,8 @@ class Company extends Model
         'last_agm' => 'date',
         'financial_year_end' => 'date',
         'active' => 'boolean',
+        'cro_officers_snapshot' => 'array',
+        'cro_officers_synced_at' => 'datetime',
     ];
 
     /**
@@ -66,7 +70,7 @@ class Company extends Model
             if ($defs->isNotEmpty()) {
                 $company->croDocDefinitions()
                     ->syncWithoutDetaching(
-                        $defs->mapWithKeys(fn($id) => [$id => ['completed' => false]])
+                        $defs->mapWithKeys(fn ($id) => [$id => ['completed' => false]])
                             ->toArray()
                     );
             }
@@ -146,7 +150,16 @@ class Company extends Model
             'company_id',
             'cro_doc_definition_id'
         )
-            ->withPivot(['completed', 'completed_at', 'completed_by'])
+            ->withPivot([
+                'completed',
+                'completed_at',
+                'completed_by',
+                'due_date',
+                'last_filed_at',
+                'status',
+                'risk_level',
+                'notes',
+            ])
             ->withTimestamps();
     }
 

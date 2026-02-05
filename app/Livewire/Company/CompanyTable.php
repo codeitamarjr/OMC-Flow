@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use App\Jobs\CompanyFetchCroSubmissions;
 
@@ -15,10 +16,15 @@ class CompanyTable extends Component
 {
     use WithPagination;
 
+    /**
+     * @var array<int, string>
+     */
+    public array $coreCroCodes = ['B1', 'B10'];
+
     public $search = '';
     public $perPage = 10;
-    public $sortBy = 'next_annual_return';
-    public $sortDirection = 'asc';
+    public $sortBy = 'max_risk_score';
+    public $sortDirection = 'desc';
     public $allTags = [];
     public array $selectedTagFilters = [];
 
@@ -39,11 +45,38 @@ class CompanyTable extends Component
     #[Computed]
     public function companies()
     {
-        $today = Carbon::today()->toDateString();
-        $soon  = Carbon::today()->addDays(56)->toDateString();
-
-        return Company::query()
+        $query = Company::query()
             ->where('business_id', Auth::user()->current_business_id)
+            ->where(function ($q) {
+                $q->where('active', true)->orWhereNull('active');
+            })
+            ->with([
+                'tags:id,name',
+                'croDocDefinitions',
+            ])
+            ->addSelect([
+                'nearest_deadline' => DB::table('company_cro_document')
+                    ->join('cro_doc_definitions', 'cro_doc_definitions.id', '=', 'company_cro_document.cro_doc_definition_id')
+                    ->selectRaw('MIN(due_date)')
+                    ->whereColumn('company_cro_document.company_id', 'companies.id')
+                    ->whereNotNull('due_date')
+                    ->whereIn('cro_doc_definitions.code', $this->coreCroCodes),
+                'max_risk_score' => DB::table('company_cro_document')
+                    ->join('cro_doc_definitions', 'cro_doc_definitions.id', '=', 'company_cro_document.cro_doc_definition_id')
+                    ->selectRaw("
+                        MAX(
+                            CASE company_cro_document.status
+                                WHEN 'overdue' THEN 4
+                                WHEN 'risky' THEN 3
+                                WHEN 'missing' THEN 2
+                                WHEN 'due_soon' THEN 1
+                                ELSE 0
+                            END
+                        )
+                    ")
+                    ->whereColumn('company_cro_document.company_id', 'companies.id')
+                    ->whereIn('cro_doc_definitions.code', $this->coreCroCodes),
+            ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -55,9 +88,20 @@ class CompanyTable extends Component
                 $query->whereHas('tags', function ($q) {
                     $q->whereIn('tags.id', $this->selectedTagFilters);
                 });
-            })
-            ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate($this->perPage);
+            });
+
+        if ($this->sortBy === 'nearest_deadline') {
+            $query->orderByRaw(
+                'CASE WHEN nearest_deadline IS NULL THEN 1 ELSE 0 END, nearest_deadline ' . $this->sortDirection
+            );
+        } elseif ($this->sortBy === 'max_risk_score') {
+            $query->orderBy('max_risk_score', $this->sortDirection)
+                ->orderByRaw('CASE WHEN nearest_deadline IS NULL THEN 1 ELSE 0 END, nearest_deadline asc');
+        } else {
+            $query->orderBy($this->sortBy, $this->sortDirection);
+        }
+
+        return $query->paginate($this->perPage);
     }
 
     /**
@@ -77,7 +121,7 @@ class CompanyTable extends Component
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
             $this->sortBy = $column;
-            $this->sortDirection = 'asc';
+            $this->sortDirection = $column === 'max_risk_score' ? 'desc' : 'asc';
         }
     }
 

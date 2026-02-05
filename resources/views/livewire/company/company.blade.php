@@ -125,6 +125,26 @@
                                 </div>
                             @endif
                         </div>
+
+                        <div>
+                            <label for="obligation-filter" class="sr-only">Obligation status</label>
+                            <select id="obligation-filter" wire:model.live="obligationFilter"
+                                class="w-full md:w-auto py-2 px-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                                <option value="all">All obligations</option>
+                                <option value="issues">Issues only</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="risky">Risky</option>
+                                <option value="missing">Missing</option>
+                                <option value="due_soon">Due soon</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <button wire:click="resetFilters"
+                            class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+                            type="button">
+                            Reset Filters
+                        </button>
                     </div>
                 </div>
             </div>
@@ -220,6 +240,32 @@
                             </th>
                             <th scope="col" class="px-6 py-2">
                                 AR01 Compliance Status
+                            </th>
+                            <th scope="col" class="px-6 py-2" wire:click="sort('max_risk_score')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'max_risk_score')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform ease-in-out @if ($sortDirection === 'asc') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Obligations
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-2" wire:click="sort('nearest_deadline')">
+                                <div class="flex items-center">
+                                    @if ($sortBy === 'nearest_deadline')
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor"
+                                            class="size-6 duration-400 transform ease-in-out @if ($sortDirection === 'asc') rotate-180 @endif">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    @endif
+                                    Next Deadline
+                                </div>
                             </th>
                             <th scope="col" class="px-6 py-2"></th>
                         </tr>
@@ -356,6 +402,101 @@
                                         </div>
                                         {{ $company->ar_status }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-1.5">
+                                    @php
+                                        $obligations = $company->croDocDefinitions->filter(
+                                            fn($d) => in_array($d->code, ['B1', 'B10'], true),
+                                        );
+                                        $issueStatuses = ['missing', 'overdue', 'risky'];
+                                        $issueCount = $obligations
+                                            ->filter(fn($d) => in_array($d->pivot->status, $issueStatuses, true))
+                                            ->count();
+                                        $overdueCount = $obligations->where('pivot.status', 'overdue')->count();
+                                        $riskyCount = $obligations->where('pivot.status', 'risky')->count();
+                                        $missingCount = $obligations->where('pivot.status', 'missing')->count();
+                                    @endphp
+
+                                    @if ($obligations->isEmpty())
+                                        <span
+                                            class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700">
+                                            Not synced
+                                        </span>
+                                    @elseif ($issueCount === 0)
+                                        <span
+                                            class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-green-100 text-green-700">
+                                            Compliant
+                                        </span>
+                                    @else
+                                        <div class="flex flex-wrap gap-1">
+                                            @if ($overdueCount > 0)
+                                                <span
+                                                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-red-100 text-red-700">
+                                                    Overdue: {{ $overdueCount }}
+                                                </span>
+                                            @endif
+                                            @if ($riskyCount > 0)
+                                                <span
+                                                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700">
+                                                    Risky: {{ $riskyCount }}
+                                                </span>
+                                            @endif
+                                            @if ($missingCount > 0)
+                                                <span
+                                                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700">
+                                                    Missing: {{ $missingCount }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-1.5">
+                                    @php
+                                        $nextDeadline = $company->croDocDefinitions
+                                            ->filter(fn($d) => in_array($d->code, ['B1', 'B10'], true))
+                                            ->filter(fn($d) => !empty($d->pivot->due_date))
+                                            ->sortBy('pivot.due_date')
+                                            ->first();
+                                    @endphp
+
+                                    @if ($nextDeadline)
+                                        @php
+                                            $dueDate = \Carbon\Carbon::parse($nextDeadline->pivot->due_date);
+                                            $days = now()->startOfDay()->diffInDays($dueDate, false);
+                                            $deadlineStatus = $nextDeadline->pivot->status ?? null;
+                                        @endphp
+                                        <div class="text-sm text-gray-800 dark:text-gray-200">
+                                            <span class="font-semibold">{{ $nextDeadline->code }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">- {{ $nextDeadline->name }}</span>
+                                        </div>
+                                        <div class="text-sm text-gray-800 dark:text-gray-200">
+                                            Submit by {{ $dueDate->format('d/m/Y') }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            @if ($days < 0)
+                                                {{ abs($days) }} days overdue
+                                            @elseif ($days === 0)
+                                                Due today
+                                            @else
+                                                In {{ $days }} days
+                                            @endif
+                                        </div>
+                                        @if ($deadlineStatus)
+                                            <div class="mt-1">
+                                                <span
+                                                    class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium
+                                                    {{ $deadlineStatus === 'overdue' ? 'bg-red-100 text-red-700' : '' }}
+                                                    {{ $deadlineStatus === 'risky' ? 'bg-orange-100 text-orange-700' : '' }}
+                                                    {{ $deadlineStatus === 'missing' ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                                    {{ $deadlineStatus === 'due_soon' ? 'bg-amber-100 text-amber-700' : '' }}
+                                                    {{ $deadlineStatus === 'completed' ? 'bg-green-100 text-green-700' : '' }}">
+                                                    {{ \Illuminate\Support\Str::of($deadlineStatus)->replace('_', ' ')->title() }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">No scheduled CRO deadline</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-1.5 flex items-center">
                                     {{-- <div wire:click="showCompanySubmissions({{ $company->id }})">

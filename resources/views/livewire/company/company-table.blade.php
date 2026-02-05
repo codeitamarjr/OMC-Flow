@@ -21,32 +21,6 @@
         <div
             class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
             <div class="flex items-center space-x-3 w-full md:w-auto">
-                <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
-                    class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 cursor-not-allowed"
-                    type="button">
-                    <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path clip-rule="evenodd" fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                    </svg>
-                    Actions
-                </button>
-                <div id="actionsDropdown"
-                    class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="actionsDropdownButton">
-                        <li>
-                            <a href="#"
-                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mass
-                                Edit</a>
-                        </li>
-                    </ul>
-                    <div class="py-1">
-                        <a href="#"
-                            class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete
-                            all</a>
-                    </div>
-                </div>
-
                 {{-- Filter --}}
                 <div class="relative" x-data="{ showDropDown: false }">
                     <button id="filterDropdownButton" @click="showDropDown = !showDropDown"
@@ -101,27 +75,33 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-4 py-3">Company</th>
-                    <th scope="col" class="px-4 py-3" wire:click="sort('next_annual_return')">
+                    <th scope="col" class="px-4 py-3" wire:click="sort('nearest_deadline')">
                         <div class="flex items-center">
-                            @if ($sortBy === 'next_annual_return')
+                            @if ($sortBy === 'nearest_deadline')
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
                                     class="size-6 duration-400 transform  ease-in-out
-                                @if ($sortDirection === 'asc' && $sortBy === 'next_annual_return') rotate-180 @endif">
+                                @if ($sortDirection === 'asc' && $sortBy === 'nearest_deadline') rotate-180 @endif">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
                             @endif
-                            Annual Return
+                            Next Deadline
                         </div>
                     </th>
-                    <th scope="col" class="px-4 py-3">
+                    <th scope="col" class="px-4 py-3" wire:click="sort('max_risk_score')">
                         <div class="flex items-center">
-                            Status
+                            @if ($sortBy === 'max_risk_score')
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="size-6 duration-400 transform ease-in-out
+                                @if ($sortDirection === 'asc' && $sortBy === 'max_risk_score') rotate-180 @endif">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            @endif
+                            Risk Summary
                         </div>
-                    </th>
-                    <th scope="col" class="px-4 py-3">
-                        <span class="sr-only">Actions</span>
                     </th>
                 </tr>
             </thead>
@@ -149,80 +129,78 @@
                             </div>
                         </th>
                         <td class="px-4 py-1">
-                            <div class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
-                                {{ \Carbon\Carbon::parse($company->next_annual_return)->format('d M Y') }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-1" x-data="{ tooltip: false }">
                             @php
-                                $statusClasses = [
-                                    'Overdue' => 'bg-red-100 text-red-700',
-                                    'Due Soon' => 'bg-yellow-100 text-yellow-700',
-                                    'Compliant' => 'bg-green-100 text-green-700',
-                                ];
+                                $nextDeadline = $company->croDocDefinitions
+                                    ->filter(fn($d) => in_array($d->code, ['B1', 'B10'], true))
+                                    ->filter(fn($d) => !empty($d->pivot->due_date))
+                                    ->sortBy('pivot.due_date')
+                                    ->first();
                             @endphp
-                            <span
-                                class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium 
-                                            {{ $statusClasses[$company->ar_status] ?? $statusClasses['Compliant'] }}">
-                                {{-- Tooltip --}}
-                                {{-- Tooltip Trigger --}}
-                                <div @mouseover="tooltip = true" @mouseleave="tooltip = false" class="relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-4 cursor-pointer">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                                    </svg>
 
-                                    {{-- Tooltip Box --}}
-                                    <div x-show="tooltip" x-transition:enter="transition ease-out duration-500"
-                                        x-transition:enter-start="opacity-0 translate-y-1"
-                                        x-transition:enter-end="opacity-100 translate-y-0"
-                                        x-transition:leave="transition ease-in duration-150"
-                                        x-transition:leave-start="opacity-100 translate-y-0"
-                                        x-transition:leave-end="opacity-0 translate-y-1"
-                                        class="absolute left-1/2 top-full mt-2 -translate-x-1/2 z-50 w-[200px] rounded-lg bg-gray-700 py-1.5 px-3 font-sans text-sm font-normal text-white text-center">
-                                        @if ($company->ar_status === 'Overdue')
-                                            This company is overdue
-                                            {{ round(-now()->diffInDays($company->next_annual_return)) }} days
-                                            for its annual return filing.
-                                        @elseif ($company->ar_status === 'Due Soon')
-                                            This company is due in less than 30 days for its annual return
-                                            filing soon.
-                                        @else
-                                            This company is compliant with its annual return filing.
-                                        @endif
-                                    </div>
+                            @if ($nextDeadline)
+                                @php
+                                    $dueDate = \Carbon\Carbon::parse($nextDeadline->pivot->due_date);
+                                @endphp
+                                <div class="mt-1 text-xs/5 text-gray-900 dark:text-gray-300">
+                                    {{ $nextDeadline->code }} - {{ $nextDeadline->name }}
                                 </div>
-                                {{ $company->ar_status }}
-                            </span>
+                                <div class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
+                                    {{ $dueDate->format('d M Y') }}
+                                </div>
+                            @else
+                                <div class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">No scheduled deadline</div>
+                            @endif
                         </td>
                         <td class="px-4 py-1">
-                            <div x-data="{ dropdown: false }">
-                                <button id="apple-imac-27-dropdown-button"
-                                    data-dropdown-toggle="apple-imac-27-dropdown" @click="dropdown = !dropdown"
-                                    class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                                    type="button">
-                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                    </svg>
-                                </button>
-                                <div id="apple-imac-27-dropdown" x-show="dropdown" @click.away="dropdown = false"
-                                    class="absolute right-0 z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                    {{-- <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                        aria-labelledby="apple-imac-27-dropdown-button">
-                                        <li>
-                                            <div wire:click="updateSubmission({{ $company->id }})"
-                                                class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                Update Submissions</div>
-                                        </li>
-                                    </ul> --}}
-                                    <div class="py-1">
-                                        <a href="#"
-                                            class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-not-allowed">Delete</a>
-                                    </div>
-                                </div>
+                            @php
+                                $obligations = $company->croDocDefinitions->filter(
+                                    fn($d) => in_array($d->code, ['B1', 'B10'], true),
+                                );
+                                $overdueCount = $obligations->where('pivot.status', 'overdue')->count();
+                                $riskyCount = $obligations->where('pivot.status', 'risky')->count();
+                                $missingCount = $obligations->where('pivot.status', 'missing')->count();
+                                $issueCount = $overdueCount + $riskyCount + $missingCount;
+                                $riskLabel = match ((int) ($company->max_risk_score ?? 0)) {
+                                    4 => 'High',
+                                    3 => 'Elevated',
+                                    2 => 'Medium',
+                                    1 => 'Low',
+                                    default => 'Compliant',
+                                };
+                                $riskClass = match ((int) ($company->max_risk_score ?? 0)) {
+                                    4 => 'bg-red-100 text-red-700',
+                                    3 => 'bg-orange-100 text-orange-700',
+                                    2 => 'bg-yellow-100 text-yellow-700',
+                                    1 => 'bg-blue-100 text-blue-700',
+                                    default => 'bg-green-100 text-green-700',
+                                };
+                            @endphp
+
+                            <span class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium {{ $riskClass }}">
+                                {{ $riskLabel }}
+                            </span>
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                @if ($issueCount === 0)
+                                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700">
+                                        No open issues
+                                    </span>
+                                @else
+                                    @if ($overdueCount > 0)
+                                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700">
+                                            Overdue: {{ $overdueCount }}
+                                        </span>
+                                    @endif
+                                    @if ($riskyCount > 0)
+                                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-orange-100 text-orange-700">
+                                            Risky: {{ $riskyCount }}
+                                        </span>
+                                    @endif
+                                    @if ($missingCount > 0)
+                                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700">
+                                            Missing: {{ $missingCount }}
+                                        </span>
+                                    @endif
+                                @endif
                             </div>
                         </td>
                     </tr>

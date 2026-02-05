@@ -3,6 +3,8 @@
 namespace App\Services\Core;
 
 use Codeitamarjr\LaravelCroApi\CroApiClient;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CroSearchService
 {
@@ -22,11 +24,34 @@ class CroSearchService
 
     public function getCompanySubmissions(string $number): array
     {
-        return $this->client->getCompanySubmissions($number);
+        try {
+            $result = $this->client->getCompanySubmissions($number);
+
+            return is_array($result) ? $result : [];
+        } catch (Throwable $e) {
+            Log::warning('CRO getCompanySubmissions failed; returning empty result', [
+                'company_number' => $number,
+                'message' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 
     public function searchCompanySubmissions(string $companyNumber, string $busIndicator = 'c'): array
     {
-        return $this->client->searchCompanySubmissions($companyNumber, $busIndicator);
+        try {
+            $result = $this->client->searchCompanySubmissions($companyNumber, $busIndicator);
+
+            return is_array($result) ? $result : [];
+        } catch (Throwable $e) {
+            Log::warning('CRO searchCompanySubmissions failed; returning empty result', [
+                'company_number' => $companyNumber,
+                'bus_indicator' => $busIndicator,
+                'message' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 }

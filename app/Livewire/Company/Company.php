@@ -9,6 +9,7 @@ use App\Services\Core\CroSearchService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -18,10 +19,16 @@ class Company extends Component
 {
     use WithPagination;
 
+    /**
+     * @var array<int, string>
+     */
+    public array $coreCroCodes = ['B1', 'B10'];
+
     public $search = '';
     public $perPage = 20;
     public $sortBy = 'next_annual_return';
     public $sortDirection = 'asc';
+    public string $obligationFilter = 'all';
     public $allTags = [];
     public array $selectedTagFilters = [];
     public ?ModelsCompany $selectedCompany = null;
@@ -79,9 +86,42 @@ class Company extends Component
     #[Computed]
     public function companies()
     {
-        return Business::find(Auth::user()->currentBusiness->id)->companies()
-            ->with('croDocDefinitions')
-            ->where('active', $this->active)
+        $query = Business::find(Auth::user()->currentBusiness->id)->companies()
+            ->with([
+                'tags:id,name',
+                'croDocDefinitions',
+            ])
+            ->addSelect([
+                'nearest_deadline' => DB::table('company_cro_document')
+                    ->join('cro_doc_definitions', 'cro_doc_definitions.id', '=', 'company_cro_document.cro_doc_definition_id')
+                    ->selectRaw('MIN(due_date)')
+                    ->whereColumn('company_cro_document.company_id', 'companies.id')
+                    ->whereNotNull('due_date')
+                    ->whereIn('cro_doc_definitions.code', $this->coreCroCodes),
+                'max_risk_score' => DB::table('company_cro_document')
+                    ->join('cro_doc_definitions', 'cro_doc_definitions.id', '=', 'company_cro_document.cro_doc_definition_id')
+                    ->selectRaw("
+                        MAX(
+                            CASE status
+                                WHEN 'overdue' THEN 4
+                                WHEN 'risky' THEN 3
+                                WHEN 'missing' THEN 2
+                                WHEN 'due_soon' THEN 1
+                                ELSE 0
+                            END
+                        )
+                    ")
+                    ->whereColumn('company_cro_document.company_id', 'companies.id')
+                    ->whereIn('cro_doc_definitions.code', $this->coreCroCodes),
+            ])
+            ->when($this->active, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('active', true)
+                        ->orWhereNull('active');
+                });
+            }, function ($query) {
+                $query->where('active', false);
+            })
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -98,8 +138,31 @@ class Company extends Component
                     $q->whereIn('tags.id', $this->selectedTagFilters);
                 });
             })
-            ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate($this->perPage);
+            ->when($this->obligationFilter !== 'all', function ($query) {
+                $query->whereHas('croDocDefinitions', function ($q) {
+                    $q->whereIn('cro_doc_definitions.code', $this->coreCroCodes);
+
+                    if ($this->obligationFilter === 'issues') {
+                        $q->whereIn('company_cro_document.status', ['missing', 'overdue', 'risky']);
+                        return;
+                    }
+
+                    $q->where('company_cro_document.status', $this->obligationFilter);
+                });
+            });
+
+        if ($this->sortBy === 'nearest_deadline') {
+            $query->orderByRaw(
+                'CASE WHEN nearest_deadline IS NULL THEN 1 ELSE 0 END, nearest_deadline ' . $this->sortDirection
+            );
+        } elseif ($this->sortBy === 'max_risk_score') {
+            $query->orderBy('max_risk_score', $this->sortDirection)
+                ->orderByRaw('CASE WHEN nearest_deadline IS NULL THEN 1 ELSE 0 END, nearest_deadline asc');
+        } else {
+            $query->orderBy('companies.' . $this->sortBy, $this->sortDirection);
+        }
+
+        return $query->paginate($this->perPage);
     }
 
     public function showAllCompanies()
@@ -120,7 +183,7 @@ class Company extends Component
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
             $this->sortBy = $column;
-            $this->sortDirection = 'asc';
+            $this->sortDirection = $column === 'max_risk_score' ? 'desc' : 'asc';
         }
     }
 
@@ -132,7 +195,23 @@ class Company extends Component
      */
     public function updatedSelectedTagFilters()
     {
+        $this->resetPage();
         session()->put('selected_tag_filters', $this->selectedTagFilters);
+    }
+
+    public function updatedObligationFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function resetFilters(): void
+    {
+        $this->search = '';
+        $this->selectedTagFilters = [];
+        $this->obligationFilter = 'all';
+        $this->resetPage();
+
+        session()->forget('selected_tag_filters');
     }
 
     /**
