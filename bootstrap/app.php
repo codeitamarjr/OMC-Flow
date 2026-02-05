@@ -16,7 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->job(new RefreshCompaniesFromCro())->dailyAt('00:00');
+        $schedule->job(new RefreshCompaniesFromCro())
+            ->dailyAt('00:00')
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
