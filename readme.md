@@ -29,8 +29,10 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
   - `overdue`
   - `risky`
 - Auto-create deadline metadata:
-  - `B1` (based on ARD + configured days)
+  - `B1` (ARD + 28 days)
   - `B10` officer changes (event-based when officer dates are available)
+  - `B2` registered office changes (14-day filing window after detected address change)
+  - `AGM` annual governance check (annual cycle from `last_agm`, fallback `registration_date`)
 - Handles invalid/null CRO responses with fallback logic
 - Uses corrected company submissions endpoint: `company/{company_num}/c/submissions`
 
@@ -45,7 +47,7 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
   - Overdue, risky, due soon, and missing totals
   - Last synced at timestamp
 - Dashboard company table now summarizes risk per company:
-  - Next core CRO deadline (`B1` / `B10`)
+  - Next core CRO deadline (`B1` / `B10` / `B2` / `AGM`)
   - Risk level (`High`, `Elevated`, `Medium`, `Low`, `Compliant`)
   - Issue badges (`Overdue`, `Risky`, `Missing`)
   - Sort by nearest deadline and highest risk
@@ -65,6 +67,10 @@ OMC Flow is a Laravel + Livewire application designed to streamline the manageme
   - filing history
   - officer snapshot
   - obligation status/risk/deadline metadata
+- `compliance:send-reminders` sends smart reminders:
+  - Countdown reminders at `60 / 30 / 7` days
+  - Overdue escalation reminders at `1 / 7 / 30` overdue days
+  - Delivery channels: email + in-app notifications
 - Handles duplicate updates and throttles requests between batches
 
 ---
@@ -124,9 +130,13 @@ php artisan queue:work database --queue=default --tries=3 --timeout=180 --stop-w
 ```
 
 ### Daily Automation (Current Status)
-- Daily sync is **not automatically scheduled yet** by default.
-- Current operation is manual dispatch + queue worker.
-- To run daily, add a scheduler entry and ensure `php artisan schedule:run` is executed by cron.
+- Daily CRO sync is scheduled at `00:00`:
+  - `RefreshCompaniesFromCro`
+- Daily reminders are scheduled at `08:00`:
+  - `compliance:send-reminders`
+- Scheduler and queue worker must be running for automation:
+  - `php artisan schedule:run` via cron
+  - `php artisan queue:work`
 
 ---
 
@@ -139,11 +149,16 @@ php artisan queue:work database --queue=default --tries=3 --timeout=180 --stop-w
   - Officer snapshot (`companies.cro_officers_snapshot`, `companies.cro_officers_synced_at`)
   - Obligation statuses and deadlines on `company_cro_document`
 - Added core obligation focus in UI and sorting:
-  - Company list and dashboard now summarize core CRO obligations (`B1`, `B10`)
+  - Company list and dashboard now summarize core CRO obligations (`B1`, `B10`, `B2`, `AGM`)
   - Company list supports filter reset, obligation filters, nearest deadline sort, and highest risk sort
 - Updated dashboard table:
   - Removed actions column
   - Added risk-summary-oriented columns and badges
+- Added automatic deadline rules:
+  - `B1`: ARD + 28 days
+  - `B10`: 14-day filing window
+  - `B2`: 14-day registered office change filing window
+  - `AGM`: annual governance check deadline
 - Added migration:
   - `2026_02_05_160000_add_cro_sync_columns`
 - Added resilient fallback handling for CRO submissions:

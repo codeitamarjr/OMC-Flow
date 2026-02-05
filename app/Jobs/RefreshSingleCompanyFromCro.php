@@ -50,7 +50,10 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
                 return;
             }
 
+            $previousAddress = $this->snapshotRegisteredOfficeAddress($company);
+
             $company->update($this->mapDetailsToAttributes($details));
+            $company->refresh();
 
             $submissions = $this->fetchCompanySubmissions($cro, $company->company_number);
             $this->syncFilingHistory($company, $submissions);
@@ -58,7 +61,9 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
             $officers = $this->extractOfficerSnapshot($details);
             $this->syncOfficerSnapshot($company, $officers);
 
-            $this->syncObligations($company, $submissions, $officers);
+            $registeredOfficeChangedAt = $this->detectRegisteredOfficeChangeDate($previousAddress, $company);
+
+            $this->syncObligations($company, $submissions, $officers, $registeredOfficeChangedAt);
         } catch (Throwable $e) {
             Log::warning('Failed refreshing company from CRO', [
                 'company_id' => $this->companyId,
@@ -185,7 +190,12 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
      * @param array<int, array<string, mixed>> $submissions
      * @param array<int, array<string, mixed>> $officers
      */
-    protected function syncObligations(Company $company, array $submissions, array $officers): void
+    protected function syncObligations(
+        Company $company,
+        array $submissions,
+        array $officers,
+        ?Carbon $registeredOfficeChangedAt
+    ): void
     {
         $definitions = $this->ensureDefaultDefinitions($company->business_id);
 
@@ -212,8 +222,17 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
         foreach ($definitions as $definition) {
             $code = strtoupper($definition->code);
             $latest = $latestByCode[$code] ?? null;
-            $lastFiledAt = $latest !== null ? $this->extractSubmissionDate($latest) : null;
-            $dueDate = $this->calculateDueDate($code, $definition->days_from_ard, $ardDate, $officerChangeEventDate);
+            $lastFiledAt = $code === 'AGM'
+                ? ($company->last_agm ? Carbon::parse($company->last_agm)->startOfDay() : null)
+                : ($latest !== null ? $this->extractSubmissionDate($latest) : null);
+            $dueDate = $this->calculateDueDate(
+                $code,
+                $definition->days_from_ard,
+                $ardDate,
+                $officerChangeEventDate,
+                $registeredOfficeChangedAt,
+                $company
+            );
 
             $status = 'missing';
             $risk = 'medium';
@@ -228,13 +247,20 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
                     $lastFiledAt,
                     $today
                 );
+            } elseif ($code === 'AGM') {
+                [$status, $risk, $completed, $notes] = $this->assessAgmGovernanceCheck(
+                    $dueDate,
+                    $lastFiledAt,
+                    $today
+                );
             } else {
                 [$status, $risk, $completed, $notes] = $this->assessEventBasedObligation(
                     $code,
                     $dueDate,
                     $lastFiledAt,
                     $today,
-                    $officerChangeEventDate
+                    $officerChangeEventDate,
+                    $registeredOfficeChangedAt
                 );
             }
 
@@ -331,8 +357,8 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
             [
                 'code' => 'B1',
                 'name' => 'Annual Return',
-                'description' => 'Must be filed within 56 days of the Annual Return Date (ARD).',
-                'days_from_ard' => 56,
+                'description' => 'Must be filed within 28 days of the Annual Return Date (ARD).',
+                'days_from_ard' => 28,
             ],
             [
                 'code' => 'B10',
@@ -340,10 +366,22 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
                 'description' => 'Officer changes should be filed promptly (typically within 14 days).',
                 'days_from_ard' => 14,
             ],
+            [
+                'code' => 'B2',
+                'name' => 'Registered Office Change',
+                'description' => 'Registered office changes should be filed within 14 days.',
+                'days_from_ard' => 14,
+            ],
+            [
+                'code' => 'AGM',
+                'name' => 'AGM Governance Check',
+                'description' => 'Annual governance check based on latest AGM date.',
+                'days_from_ard' => 365,
+            ],
         ];
 
         foreach ($defaults as $default) {
-            CroDocDefinition::firstOrCreate(
+            CroDocDefinition::updateOrCreate(
                 ['code' => $default['code']],
                 [
                     'name' => $default['name'],
@@ -356,7 +394,7 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
         }
 
         return CroDocDefinition::accessible((int) $businessId)
-            ->whereIn('code', ['B1', 'B10'])
+            ->whereIn('code', ['B1', 'B10', 'B2', 'AGM'])
             ->get();
     }
 
@@ -463,7 +501,14 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
         return $latest;
     }
 
-    protected function calculateDueDate(string $code, int $daysFromArd, ?Carbon $ardDate, ?Carbon $officerChangeEventDate): ?Carbon
+    protected function calculateDueDate(
+        string $code,
+        int $daysFromArd,
+        ?Carbon $ardDate,
+        ?Carbon $officerChangeEventDate,
+        ?Carbon $registeredOfficeChangedAt,
+        Company $company
+    ): ?Carbon
     {
         if ($code === 'B1') {
             return $ardDate?->copy()->addDays(max(0, $daysFromArd));
@@ -471,6 +516,20 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
 
         if ($code === 'B10') {
             return $officerChangeEventDate?->copy()->addDays(14);
+        }
+
+        if ($code === 'B2') {
+            return $registeredOfficeChangedAt?->copy()->addDays(14);
+        }
+
+        if ($code === 'AGM') {
+            if ($company->last_agm) {
+                return Carbon::parse($company->last_agm)->startOfDay()->addYear();
+            }
+
+            if ($company->registration_date) {
+                return Carbon::parse($company->registration_date)->startOfDay()->addYear();
+            }
         }
 
         return $ardDate?->copy()->addDays(max(0, $daysFromArd));
@@ -510,7 +569,8 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
         ?Carbon $dueDate,
         ?Carbon $lastFiledAt,
         Carbon $today,
-        ?Carbon $officerChangeEventDate
+        ?Carbon $officerChangeEventDate,
+        ?Carbon $registeredOfficeChangedAt
     ): array {
         if ($code === 'B10' && $officerChangeEventDate === null) {
             if ($lastFiledAt !== null) {
@@ -518,6 +578,14 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
             }
 
             return ['risky', 'medium', false, 'No officer change event was found in CRO detail payload.'];
+        }
+
+        if ($code === 'B2' && $registeredOfficeChangedAt === null) {
+            if ($lastFiledAt !== null) {
+                return ['completed', 'low', true, 'Most recent registered-office filing is recorded.'];
+            }
+
+            return ['risky', 'medium', false, 'No registered-office change event was detected from the latest sync.'];
         }
 
         if ($dueDate === null) {
@@ -539,5 +607,61 @@ class RefreshSingleCompanyFromCro implements ShouldQueue
         }
 
         return ['missing', 'medium', false, 'Filing not yet detected for this obligation.'];
+    }
+
+    /**
+     * @return array{string, string, bool, ?string}
+     */
+    protected function assessAgmGovernanceCheck(?Carbon $dueDate, ?Carbon $lastAgmAt, Carbon $today): array
+    {
+        if ($lastAgmAt === null || $dueDate === null) {
+            return ['risky', 'high', false, 'No AGM history detected; annual governance compliance is uncertain.'];
+        }
+
+        $daysRemaining = $today->diffInDays($dueDate, false);
+
+        if ($daysRemaining < 0) {
+            return ['overdue', 'high', false, 'AGM annual governance check is overdue.'];
+        }
+
+        if ($daysRemaining <= 30) {
+            return ['due_soon', 'medium', false, 'AGM governance check is due within 30 days.'];
+        }
+
+        return ['completed', 'low', true, 'AGM governance check is currently up to date.'];
+    }
+
+    /**
+     * @return array<string, ?string>
+     */
+    protected function snapshotRegisteredOfficeAddress(Company $company): array
+    {
+        return [
+            'address_line_1' => $company->address_line_1,
+            'address_line_2' => $company->address_line_2,
+            'address_line_3' => $company->address_line_3,
+            'address_line_4' => $company->address_line_4,
+            'postcode' => $company->postcode,
+        ];
+    }
+
+    /**
+     * @param array<string, ?string> $previousAddress
+     */
+    protected function detectRegisteredOfficeChangeDate(array $previousAddress, Company $company): ?Carbon
+    {
+        $currentAddress = [
+            'address_line_1' => $company->address_line_1,
+            'address_line_2' => $company->address_line_2,
+            'address_line_3' => $company->address_line_3,
+            'address_line_4' => $company->address_line_4,
+            'postcode' => $company->postcode,
+        ];
+
+        if ($previousAddress === $currentAddress) {
+            return null;
+        }
+
+        return now()->startOfDay();
     }
 }

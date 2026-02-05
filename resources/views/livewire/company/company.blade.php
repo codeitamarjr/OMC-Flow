@@ -406,7 +406,7 @@
                                 <td class="px-6 py-1.5">
                                     @php
                                         $obligations = $company->croDocDefinitions->filter(
-                                            fn($d) => in_array($d->code, ['B1', 'B10'], true),
+                                            fn($d) => in_array($d->code, ['B1', 'B10', 'B2', 'AGM'], true),
                                         );
                                         $issueStatuses = ['missing', 'overdue', 'risky'];
                                         $issueCount = $obligations
@@ -453,7 +453,7 @@
                                 <td class="px-6 py-1.5">
                                     @php
                                         $nextDeadline = $company->croDocDefinitions
-                                            ->filter(fn($d) => in_array($d->code, ['B1', 'B10'], true))
+                                            ->filter(fn($d) => in_array($d->code, ['B1', 'B10', 'B2', 'AGM'], true))
                                             ->filter(fn($d) => !empty($d->pivot->due_date))
                                             ->sortBy('pivot.due_date')
                                             ->first();

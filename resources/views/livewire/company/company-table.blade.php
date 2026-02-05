@@ -131,7 +131,7 @@
                         <td class="px-4 py-1">
                             @php
                                 $nextDeadline = $company->croDocDefinitions
-                                    ->filter(fn($d) => in_array($d->code, ['B1', 'B10'], true))
+                                    ->filter(fn($d) => in_array($d->code, ['B1', 'B10', 'B2', 'AGM'], true))
                                     ->filter(fn($d) => !empty($d->pivot->due_date))
                                     ->sortBy('pivot.due_date')
                                     ->first();
@@ -154,7 +154,7 @@
                         <td class="px-4 py-1">
                             @php
                                 $obligations = $company->croDocDefinitions->filter(
-                                    fn($d) => in_array($d->code, ['B1', 'B10'], true),
+                                    fn($d) => in_array($d->code, ['B1', 'B10', 'B2', 'AGM'], true),
                                 );
                                 $overdueCount = $obligations->where('pivot.status', 'overdue')->count();
                                 $riskyCount = $obligations->where('pivot.status', 'risky')->count();

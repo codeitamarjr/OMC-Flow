@@ -19,7 +19,7 @@ class CompanyTable extends Component
     /**
      * @var array<int, string>
      */
-    public array $coreCroCodes = ['B1', 'B10'];
+    public array $coreCroCodes = ['B1', 'B10', 'B2', 'AGM'];
 
     public $search = '';
     public $perPage = 10;

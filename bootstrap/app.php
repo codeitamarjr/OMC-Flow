@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->job(new RefreshCompaniesFromCro())
             ->dailyAt('00:00')
             ->withoutOverlapping();
+
+        $schedule->command('compliance:send-reminders')
+            ->dailyAt('08:00')
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -32,6 +32,10 @@ class UserNotificationSetting extends Model
             'label'       => 'Document Deadlines',
             'description' => 'Get a heads-up before any document submission deadlines approach.',
         ],
+        'overdue_escalation' => [
+            'label'       => 'Overdue Escalation',
+            'description' => 'Receive escalation alerts when filing obligations become overdue.',
+        ],
         // add more as you go...
     ];
 

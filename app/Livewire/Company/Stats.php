@@ -13,7 +13,7 @@ class Stats extends Component
     /**
      * @var array<int, string>
      */
-    protected array $coreCroCodes = ['B1', 'B10'];
+    protected array $coreCroCodes = ['B1', 'B10', 'B2', 'AGM'];
 
     public function render()
     {
